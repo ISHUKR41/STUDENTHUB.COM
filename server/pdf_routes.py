@@ -11,6 +11,8 @@ from werkzeug.utils import secure_filename
 import sys
 sys.path.append(os.path.dirname(__file__))
 from pdf_converter import PDFToWordConverter
+# Also import the enhanced converter for direct usage
+import subprocess
 import logging
 
 # Configure logging

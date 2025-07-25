@@ -115,6 +115,42 @@ class PDFToWordConverter:
             logger.error(f"Text extraction error: {str(e)}")
             return {"success": False, "error": "Failed to extract text from PDF"}
     
+    def try_enhanced_conversion(self, pdf_path: str) -> Dict[str, Any]:
+        """Try enhanced conversion using pdf2docx for perfect layout preservation"""
+        try:
+            import subprocess
+            import json
+            
+            # Call the enhanced converter script
+            result = subprocess.run([
+                'python3',
+                os.path.join(os.path.dirname(__file__), 'enhanced_pdf_converter.py'),
+                pdf_path,
+                self.temp_dir
+            ], capture_output=True, text=True, timeout=300)  # 5 minute timeout
+            
+            if result.returncode == 0:
+                output = json.loads(result.stdout.strip())
+                if output.get("success"):
+                    logger.info(f"Enhanced conversion successful: {output.get('message')}")
+                    return {
+                        "success": True,
+                        "enhanced_conversion": True,
+                        "output_path": output.get("output_path"),
+                        "conversion_method": output.get("conversion_method"),
+                        "message": output.get("message")
+                    }
+                else:
+                    logger.warning(f"Enhanced conversion failed: {output.get('error')}")
+                    return {"success": False, "error": output.get("error")}
+            else:
+                logger.warning(f"Enhanced converter process failed with code {result.returncode}")
+                return {"success": False, "error": "Enhanced converter process failed"}
+                
+        except Exception as e:
+            logger.warning(f"Enhanced conversion error: {str(e)}")
+            return {"success": False, "error": f"Enhanced conversion failed: {str(e)}"}
+    
     def extract_text_with_ocr(self, file_path: str) -> Dict[str, Any]:
         """Extract text from scanned PDF using OCR"""
         try:
@@ -216,23 +252,34 @@ class PDFToWordConverter:
             if "error" in pdf_type:
                 return {"success": False, "error": pdf_type["error"]}
             
-            # Extract content based on PDF type
-            if pdf_type["is_scanned"]:
-                logger.info("Processing scanned PDF with OCR")
-                extraction_result = self.extract_text_with_ocr(pdf_path)
+            # Try enhanced converter first for perfect layout preservation
+            enhanced_result = self.try_enhanced_conversion(pdf_path)
+            if enhanced_result["success"]:
+                logger.info("Using enhanced pdf2docx conversion")
+                extraction_result = enhanced_result
             else:
-                logger.info("Processing text-based PDF")
-                extraction_result = self.extract_text_from_pdf(pdf_path)
+                # Fallback to existing logic
+                if pdf_type["is_scanned"]:
+                    logger.info("Processing scanned PDF with OCR")
+                    extraction_result = self.extract_text_with_ocr(pdf_path)
+                else:
+                    logger.info("Processing text-based PDF")
+                    extraction_result = self.extract_text_from_pdf(pdf_path)
             
             if not extraction_result["success"]:
                 return {"success": False, "error": extraction_result["error"]}
             
-            # Generate output file path
-            output_filename = f"converted_{uuid.uuid4()}.docx"
-            output_path = os.path.join(self.temp_dir, output_filename)
-            
-            # Create Word document
-            word_result = self.create_word_document(extraction_result["content"], output_path)
+            # If enhanced conversion was successful, use the generated file directly
+            if extraction_result.get("enhanced_conversion"):
+                output_path = extraction_result["output_path"]
+                word_result = {"success": True, "output_path": output_path}
+            else:
+                # Generate output file path
+                output_filename = f"converted_{uuid.uuid4()}.docx"
+                output_path = os.path.join(self.temp_dir, output_filename)
+                
+                # Create Word document using fallback method
+                word_result = self.create_word_document(extraction_result["content"], output_path)
             if not word_result["success"]:
                 return {"success": False, "error": word_result["error"]}
             

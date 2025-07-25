@@ -1,0 +1,84 @@
+You are a professional backend developer. Build the complete backend code for a fully working "PDF to Word Converter" web tool. This tool must convert uploaded PDF files to DOCX format accurately while preserving layout, fonts, tables, images, and paragraph formatting.
+
+🚫 Do NOT use OpenAI, Gemini, or any AI service.
+🚫 Do NOT return broken or blank Word files.
+🚫 Do NOT use dummy code.
+✅ All logic must be real and tested.
+✅ The backend must be fully secure and error-free.
+✅ Must include OCR logic for scanned PDFs.
+
+🧠 CORE LOGIC:
+
+1. Accept only `.pdf` files (max size: 50MB)
+2. Detect if the uploaded PDF is scanned or text-based
+   - If text-based:
+     → Use `pdf2docx` or `PyMuPDF` to extract text, layout, and images
+     → Maintain accurate structure in the Word output
+   - If scanned (image-based PDF):
+     → Convert PDF pages to images with `pdf2image`
+     → Use `pytesseract` for OCR to extract readable text
+     → Use `python-docx` to write text content with proper paragraph spacing
+
+3. Generate a `.docx` file and save it temporarily in `/tmp/` folder
+4. Securely generate a UUID-based temporary download link (e.g. `/download/<file_id>?token=<hash>`)
+5. Auto-delete both the uploaded PDF and generated Word file after 4 minutes (via `threading.Timer`)
+6. Return proper error messages if:
+   - Invalid file type
+   - File is corrupted
+   - Text extraction fails
+   - OCR fails
+   - File not found
+   - Link expired
+
+🔐 SECURITY:
+- Store files only in `/tmp/`
+- Never expose file paths directly
+- Generate one-time download links with expiry
+- Sanitize file names
+- Set content headers (`Content-Disposition`) for safe downloading
+- Block re-accessing expired files
+
+📤 BACKEND ROUTES:
+- `POST /upload` → Handle file upload and process conversion
+- `GET /download/<uuid>` → Serve the Word file securely for download (expires in 4 minutes)
+- `DELETE /cleanup/<uuid>` → Background file cleanup route (optional if auto-delete is used)
+
+📦 LIBRARIES TO USE:
+- `pdf2docx` → for real layout-preserving conversion
+- `pdf2image` → for rendering scanned PDFs to images
+- `pytesseract` → for OCR of image-based PDFs
+- `python-docx` → to write structured Word documents
+- `uuid`, `hashlib` → for secure links
+- `threading.Timer` or `asyncio` → for delayed file deletion
+- `os`, `shutil`, `tempfile` → for secure file handling
+- `flask` or `fastapi` → for backend framework (based on language support)
+
+📁 FILE LOGIC:
+- All files go into `/tmp/converted/`
+- Use random UUIDs as filenames
+- Download URLs expire after 4 minutes
+- Files get deleted automatically
+
+📊 RESPONSE STRUCTURE:
+- On upload success → return { status: "success", download_url: "/download/<uuid>?token=<hash>", expires_in: "4 min" }
+- On failure → return { status: "error", message: "OCR failed" } or similar
+
+⚠️ ERROR HANDLING:
+- "Invalid file" → for anything except `.pdf`
+- "File too large" → >50MB
+- "Conversion failed" → if pdf2docx fails
+- "No text found" → for empty output after OCR
+- "Link expired" → if access after 4 minutes
+- "Internal server error" → if any crash
+
+💬 LOGGING (Optional):
+- Store logs: filename, IP (if available), timestamp, result (success/failure)
+
+✅ MUST RETURN:
+- Fully working backend code (Flask or FastAPI)
+- All routes working and secured
+- requirements.txt with correct dependencies
+- Cleanup logic fully implemented
+- No AI APIs, No placeholder logic, No broken output
+
+Write production-ready code, ready to run on Replit without bugs.
