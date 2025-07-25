@@ -222,7 +222,7 @@ const Tools = () => {
     { id: 'merge-pdf', title: 'Merge PDF', description: 'Combine multiple PDFs into one file', icon: <Combine className="w-6 h-6" />, popular: true },
     { id: 'split-pdf', title: 'Split PDF', description: 'Extract pages or split into multiple files', icon: <Scissors className="w-6 h-6" />, popular: true },
     { id: 'compress-pdf', title: 'Compress PDF', description: 'Reduce file size without quality loss', icon: <Settings className="w-6 h-6" />, popular: true },
-    { id: 'pdf-to-word', title: 'PDF to Word', description: 'Convert PDF to editable Word document', icon: <FileOutput className="w-6 h-6" />, popular: false },
+    { id: 'pdf-to-word', title: 'PDF to Word', description: 'Convert PDF to editable Word document with OCR support', icon: <FileOutput className="w-6 h-6" />, popular: true },
     { id: 'pdf-to-ppt', title: 'PDF to PowerPoint', description: 'Transform PDF into presentation slides', icon: <FileOutput className="w-6 h-6" />, popular: false },
     { id: 'pdf-to-excel', title: 'PDF to Excel', description: 'Extract tables to Excel spreadsheet', icon: <FileOutput className="w-6 h-6" />, popular: false },
     { id: 'word-to-pdf', title: 'Word to PDF', description: 'Convert Word documents to PDF format', icon: <FileText className="w-6 h-6" />, popular: true },

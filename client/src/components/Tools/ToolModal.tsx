@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 import { MergePDFTool } from './PDFTools/MergePDFTool';
 import { SplitPDFTool } from './PDFTools/SplitPDFTool';
 import { CompressPDFTool } from './PDFTools/CompressPDFTool';
-import { PDFToWordTool } from './PDFTools/PDFToWordTool';
+import { PDFConverter } from './PDFConverter';
 import { PDFToPowerPointTool } from './PDFTools/PDFToPowerPointTool';
 import { ResizeImageTool } from './ImageTools/ResizeImageTool';
 import CropImageTool from '../ImageTools/CropImageTool';
@@ -41,7 +41,7 @@ export const ToolModal: React.FC<ToolModalProps> = ({ isOpen, onClose, toolId, t
       case 'protect-pdf':
         return <ProtectPDFTool />;
       case 'pdf-to-word':
-        return <PDFToWordTool />;
+        return <PDFConverter />;
       case 'pdf-to-powerpoint':
         return <PDFToPowerPointTool />;
       case 'resize-image':
