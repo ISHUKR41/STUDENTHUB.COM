@@ -7,6 +7,9 @@ import time
 from pathlib import Path
 from flask import Flask, request, jsonify, send_file, abort
 from werkzeug.utils import secure_filename
+# Import the converter class from the same directory
+import sys
+sys.path.append(os.path.dirname(__file__))
 from pdf_converter import PDFToWordConverter
 import logging
 
@@ -62,7 +65,7 @@ def upload_and_convert():
         client_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
         
         # Save uploaded file temporarily
-        filename = secure_filename(file.filename)
+        filename = secure_filename(file.filename or 'uploaded.pdf')
         temp_pdf_path = os.path.join(tempfile.gettempdir(), f"upload_{int(time.time())}_{filename}")
         file.save(temp_pdf_path)
         
