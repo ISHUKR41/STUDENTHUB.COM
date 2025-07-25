@@ -1,0 +1,45 @@
+Build a fully working "PDF to Word Converter" tool with the following requirements:
+
+🔧 Backend Functionality (No AI usage):
+1. Use real Python libraries like `pdfminer.six`, `python-docx`, `pdf2image`, `pytesseract`, and `Flask`.
+2. Accept only `.pdf` files (max size: 50MB) through a secure POST request.
+3. Check if the uploaded PDF is scanned (image-based) or text-based:
+   - If scanned: convert pages to images using `pdf2image`, extract text via `pytesseract` OCR, and write into a `.docx` using `python-docx`.
+   - If text-based: use `pdfminer.six` to extract text and save directly into `.docx`.
+4. Save uploaded files securely in a temporary folder (`/tmp`), and generate a downloadable `.docx` version.
+5. Return a downloadable link (`/download/<filename>`) via a JSON response, and start a background thread to delete both the uploaded `.pdf` and the generated `.docx` file after **4 minutes** (240 seconds).
+6. All logic must run locally — do not use any AI services or external cloud APIs.
+7. Ensure strong error handling for:
+   - Corrupted PDF
+   - OCR failure
+   - Unsupported file types
+   - Missing files or expired links
+
+🎨 Frontend (Responsive + 3D Animated + Lightweight):
+1. Build a modern, animated, 3D-styled interface using only HTML, CSS (glassmorphism / neon UI), and vanilla JavaScript.
+2. Include a single input form where users can upload their PDF file.
+3. Add a spinning loader animation while the file is being processed.
+4. Show the download button only when the server returns the success response.
+5. Animate the UI using `@keyframes`, `box-shadow`, and hover effects.
+6. Ensure full responsiveness across mobile, tablet, and desktop.
+7. Do not use heavy libraries like Bootstrap or jQuery — keep it fast and mobile-friendly.
+
+📁 Project Structure:
+- `app.py` — Main backend logic
+- `index.html` — Frontend interface
+- `requirements.txt` — List of required Python packages
+- `/tmp` folder — Temporary storage for uploaded files and output
+
+🛡 Security + UX:
+- Files must auto-delete in 4 minutes to ensure privacy.
+- Validate file extensions and reject anything except `.pdf`.
+- Prevent blank or corrupted output files.
+- Avoid server crashes on malformed files.
+
+📦 Output:
+Give complete working code for:
+- `app.py` (Flask backend)
+- `index.html` (animated frontend)
+- `requirements.txt` (dependencies)
+
+✅ This tool must work fully end-to-end with no dummy code. All backend logic must be implemented. Use Python for backend, and keep the frontend in standard HTML/CSS/JS (no frameworks). Do not use OpenAI, Gemini, or any AI-based libraries. This must be deployable and testable inside Replit.

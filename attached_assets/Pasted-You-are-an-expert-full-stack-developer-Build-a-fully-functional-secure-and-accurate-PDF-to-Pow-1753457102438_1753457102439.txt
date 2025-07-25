@@ -1,0 +1,122 @@
+You are an expert full-stack developer. Build a **fully functional, secure, and accurate “PDF to PowerPoint” conversion tool** with complete backend and frontend code — **no AI (OpenAI, Gemini, or third-party APIs)** must be used. The tool must process all PDFs locally and support scanned PDFs via OCR.
+
+🎯 GOAL:
+Convert any `.pdf` file (max 50MB) into a **real, editable `.pptx` file**:
+- For text-based PDFs: Extract text and structure it into PowerPoint slides.
+- For scanned PDFs (image-based): Use OCR to extract text and then structure it into slides.
+- Layout must be preserved as accurately as possible.
+- Images and tables from PDF must also be placed into corresponding slides if present.
+
+🧠 CORE BACKEND LOGIC:
+Use Python with Flask for the backend. Do not use dummy or placeholder code — all conversion logic must be fully implemented using the following open-source libraries:
+
+1. `PyMuPDF` or `pdfminer.six` → extract content from text-based PDFs.
+2. `pdf2image` + `pytesseract` → for OCR on scanned PDFs (convert pages to images, extract text).
+3. `python-pptx` → build `.pptx` slides dynamically.
+4. `Flask`, `uuid`, `threading`, and `tempfile` → for secure file handling and download logic.
+
+🔍 FILE VALIDATION:
+- Accept only `.pdf` files, max 50MB.
+- Validate extension and MIME type.
+- Check for text content density to detect whether it’s a scanned (image-based) or text-based PDF.
+
+📄 SLIDE GENERATION RULES:
+- Each PDF page = 1 PowerPoint slide.
+- Add headers, paragraphs, or bullet points based on logical separation in content.
+- Embed images from PDF pages as slide backgrounds (optional).
+- Text boxes must follow the document layout (left-aligned, center-aligned, etc.).
+- Use font size and styles to preserve hierarchy (e.g., bold = header).
+
+👁️‍🗨️ SCANNED PDF LOGIC:
+- If PDF has minimal extractable text, treat it as scanned.
+- Convert each page to an image using `pdf2image`.
+- Use `pytesseract` OCR to extract text.
+- Build slides from OCR results — one slide per page.
+- Show fallback message in slide if OCR fails for a page.
+
+📁 FILE STORAGE + DOWNLOAD SECURITY:
+- Uploaded PDFs and generated `.pptx` files must be stored temporarily in a `/tmp` directory.
+- On successful conversion, return a secure hashed download link (`/download/<uuid>`) to the frontend.
+- Auto-delete both input and output files after 4 minutes (240 seconds) using background threads or cleanup scheduler.
+
+🛡️ SECURITY RULES:
+- Never expose file paths or server internals.
+- Prevent access to expired files with proper route validation.
+- Return friendly error messages for:
+  - Unsupported file type
+  - Corrupt PDF
+  - OCR failure
+  - File size exceeded
+  - Download expired
+
+🧪 LOGGING (Optional):
+- Log filename, conversion status, timestamp, and optional IP address for debugging or analytics (in a secure log file).
+
+---
+
+🎨 FRONTEND UI (NO FRAMEWORKS):
+Build a modern, animated, lightweight, **3D-styled frontend** using HTML, CSS (with glassmorphism + neon shadows), and vanilla JavaScript.
+
+🎯 UI REQUIREMENTS:
+1. Clean single-page interface with drag & drop file upload + browse button.
+2. Show animated Lottie loader or SVG spinner while conversion is processing.
+3. Display progress using animated progress bar or text updates.
+4. On success, show a **large glowing download button** with countdown timer (4 min remaining).
+5. On failure, show animated error box with retry option.
+6. Use 3D hover effects, glowing cards, floating containers, and smooth transitions.
+7. Fully responsive for:
+   - Mobile phones (portrait view)
+   - Tablets (adaptive scaling)
+   - Desktops (grid-based UI)
+8. Use accessible elements (buttons, labels, aria tags) and keyboard navigability.
+
+---
+
+📦 OUTPUT PROJECT FILES:
+Return the complete working code for:
+
+- `app.py` → Flask backend
+- `index.html` → Modern frontend UI
+- `style.css` → All custom 3D glass UI animations and styles
+- `main.js` → Upload logic, progress bar, download timer
+- `requirements.txt` → All backend libraries
+- `/tmp` → Temporary file store (auto-created)
+- `cleanup.py` or inline thread logic → for auto-deleting files after 4 minutes
+
+---
+
+🧠 FUNCTIONALITY SUMMARY:
+
+- ✅ Accept `.pdf` file from user
+- ✅ Validate file type and size
+- ✅ Detect whether PDF is scanned or text-based
+- ✅ Extract content (text or OCR)
+- ✅ Convert to `.pptx` using `python-pptx`
+- ✅ Securely store in `/tmp/`
+- ✅ Return secure, expiring download link (4 minutes)
+- ✅ Frontend shows animated progress + download button
+- ✅ Delete files automatically after expiry
+- ✅ No blank or corrupt files
+- ✅ No use of OpenAI, Gemini, or external AI
+- ✅ Fully working backend + frontend
+- ✅ Lightweight, 3D-animated UI (no slowdowns on mobile)
+
+---
+
+🚫 MUST NOT:
+- ❌ Use any AI APIs (e.g., OpenAI, Gemini, Claude)
+- ❌ Use dummy or placeholder logic
+- ❌ Use cloud services for OCR or conversion
+- ❌ Expose server paths or create insecure endpoints
+- ❌ Skip OCR logic — even scanned PDFs must be processed
+- ❌ Produce blank or damaged `.pptx` output
+
+---
+
+✅ BONUS:
+Use `uuid.uuid4()` to generate unique filenames for both uploaded and output files. Set MIME type correctly for PPTX download. Show proper toast notifications (success/failure) on frontend with icons or slide-in animations.
+
+---
+
+This tool must run **fully locally** inside Replit with real backend logic, and must be fast, secure, and visually impressive across all devices. Return the entire working project — ready to test, deploy, and use immediately.
+

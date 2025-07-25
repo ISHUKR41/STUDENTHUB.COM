@@ -152,61 +152,99 @@ export const PDFToPowerPointTool = () => {
     setProgress(0);
 
     try {
-      // Step 1: Load and analyze PDF
-      setProgress(10);
-      const arrayBuffer = await file.file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      const pageCount = pdfDoc.getPageCount();
-      
-      // Step 2: Analyze document structure
-      setProgress(20);
-      await new Promise(resolve => setTimeout(resolve, 600));
-      
-      // Step 3: Extract content with detailed progress
-      const conversionSteps = [
-        { step: 'Analyzing PDF structure and layout...', progress: 30 },
-        { step: 'Extracting text and fonts...', progress: 40 },
-        { step: 'Processing images and graphics...', progress: 50 },
-        { step: 'Converting tables to slide elements...', progress: 60 },
-        { step: 'Applying OCR to scanned content...', progress: 70 },
-        { step: 'Creating PowerPoint slides...', progress: 80 },
-        { step: 'Preserving layout and formatting...', progress: 90 },
-        { step: 'Finalizing PPTX structure...', progress: 95 }
-      ];
+      // Create FormData for upload
+      const formData = new FormData();
+      formData.append('file', file.file);
 
-      for (const conversionStep of conversionSteps) {
-        await new Promise(resolve => setTimeout(resolve, 700));
-        setProgress(conversionStep.progress);
+      // Step 1: Upload and start conversion
+      setProgress(20);
+      
+      const response = await fetch('/api/pdf-to-pptx-converter/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
+        throw new Error(errorData.error || 'Upload failed');
       }
 
-      // Step 4: Create PPTX file
-      const pptxContent = createPowerPointFile(file.name, pageCount, settings);
-      
-      const blob = new Blob([pptxContent], { 
-        type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' 
-      });
-      const downloadUrl = URL.createObjectURL(blob);
+      const result = await response.json();
+      setProgress(50);
 
-      // Update file with converted data
-      setFile(prev => prev ? { 
-        ...prev, 
-        status: 'completed',
-        downloadUrl 
-      } : null);
+      if (result.success) {
+        // Step 2: Monitor processing and download when ready
+        const downloadId = result.download_id;
+        const expiryTime = result.expiry_time;
+        
+        // Poll for completion with timeout
+        const checkCompletion = async () => {
+          for (let attempts = 0; attempts < 30; attempts++) {
+            if (Date.now() > expiryTime) {
+              throw new Error('Conversion timeout - file expired');
+            }
 
-      setProgress(100);
-      
-      toast({
-        title: "Conversion complete!",
-        description: `Your PDF has been converted to PowerPoint with ${pageCount} slides`
-      });
+            setProgress(60 + (attempts * 1.5));
+            
+            try {
+              const downloadResponse = await fetch(`/api/pdf-to-pptx-converter/download/${downloadId}`);
+              
+              if (downloadResponse.ok) {
+                // Success - download the file
+                const blob = await downloadResponse.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = file.name.replace('.pdf', '.pptx');
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                setProgress(100);
+                
+                toast({
+                  title: "Conversion Complete! 🎉",
+                  description: `PowerPoint file has been downloaded successfully`
+                });
+                
+                // Reset after successful conversion
+                setTimeout(() => {
+                  setFile(null);
+                  setIsProcessing(false);
+                  setProgress(0);
+                }, 2000);
+                
+                return;
+              } else if (downloadResponse.status === 202) {
+                // Still processing, continue waiting
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                continue;
+              } else {
+                const errorData = await downloadResponse.json().catch(() => ({ error: 'Download failed' }));
+                throw new Error(errorData.error || 'Download failed');
+              }
+            } catch (fetchError) {
+              if (attempts === 29) {
+                throw fetchError;
+              }
+              await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+          }
+          throw new Error('Conversion timeout - please try again');
+        };
+
+        await checkCompletion();
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
       
     } catch (error) {
       console.error('Conversion error:', error);
       setFile(prev => prev ? { ...prev, status: 'error' } : null);
       toast({
         title: "Conversion failed",
-        description: "There was an error converting your PDF. Please try again.",
+        description: error instanceof Error ? error.message : "Please try again.",
         variant: "destructive"
       });
     } finally {

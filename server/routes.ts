@@ -468,6 +468,312 @@ except Exception as e:
     }
   });
 
+  // Word to PDF Converter Routes
+  app.post("/api/word-to-pdf-converter/upload", upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, error: 'No file provided' });
+      }
+
+      // Validate file type
+      if (req.file.mimetype !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        return res.status(400).json({ success: false, error: 'Only DOCX files are allowed' });
+      }
+
+      // Validate file size (50MB)
+      if (req.file.size > 50 * 1024 * 1024) {
+        return res.status(400).json({ success: false, error: 'File too large. Maximum size is 50MB' });
+      }
+
+      console.log(`Processing DOCX: ${req.file.originalname}, Size: ${req.file.size} bytes`);
+
+      // Create a unique download ID
+      const crypto = await import('crypto');
+      const downloadId = crypto.randomBytes(16).toString('hex');
+      const expiryTime = Date.now() + (4 * 60 * 1000); // 4 minutes from now
+      
+      // Store file info for later download
+      pdfFileStore.set(`word_${downloadId}`, {
+        originalName: req.file.originalname,
+        buffer: req.file.buffer,
+        uploadTime: Date.now(),
+        expiryTime: expiryTime,
+        processed: false
+      });
+
+      // Start background processing
+      setTimeout(async () => {
+        try {
+          const { spawn } = await import('child_process');
+          const fs = await import('fs');
+          const path = await import('path');
+          
+          // Save DOCX temporarily
+          const tempDocxPath = path.join('/tmp', `word_${downloadId}.docx`);
+          await fs.promises.writeFile(tempDocxPath, req.file.buffer);
+          
+          console.log(`DOCX saved to: ${tempDocxPath}`);
+          
+          // Process DOCX using Python script
+          const pythonProcess = spawn('python3', [
+            path.join(process.cwd(), 'server', 'word_to_pdf_converter.py'),
+            tempDocxPath,
+            '/tmp'
+          ], { stdio: 'pipe' });
+
+          let output = '';
+          pythonProcess.stdout.on('data', (data) => {
+            output += data.toString();
+          });
+
+          pythonProcess.on('close', (code) => {
+            try {
+              if (code === 0 && output.trim()) {
+                const result = JSON.parse(output.trim());
+                if (result.success) {
+                  console.log(`Word to PDF conversion successful: ${result.output_path}`);
+                }
+              }
+            } catch (e) {
+              console.error('Failed to parse conversion result:', e);
+            }
+            
+            // Mark as processed
+            const fileData = pdfFileStore.get(`word_${downloadId}`);
+            if (fileData) {
+              fileData.processed = true;
+              pdfFileStore.set(`word_${downloadId}`, fileData);
+            }
+            
+            // Clean up temp DOCX file
+            fs.unlink(tempDocxPath, () => {});
+          });
+
+        } catch (error) {
+          console.error('Word to PDF processing error:', error);
+        }
+      }, 100);
+
+      // Return immediate response
+      const result = {
+        success: true,
+        download_id: downloadId,
+        expiry_time: expiryTime,
+        file_size: req.file.size,
+        file_type: 'docx',
+        expires_in_minutes: 4
+      };
+
+      res.json(result);
+
+    } catch (error) {
+      console.error('Word to PDF upload error:', error);
+      res.status(500).json({ success: false, error: 'Upload failed' });
+    }
+  });
+
+  app.get("/api/word-to-pdf-converter/download/:downloadId", async (req, res) => {
+    try {
+      const fileData = pdfFileStore.get(`word_${req.params.downloadId}`);
+      
+      if (!fileData) {
+        return res.status(404).json({ success: false, error: 'File not found or expired' });
+      }
+
+      // Check if expired
+      if (Date.now() > fileData.expiryTime) {
+        pdfFileStore.delete(`word_${req.params.downloadId}`);
+        return res.status(410).json({ success: false, error: 'Download link has expired' });
+      }
+
+      // Look for converted PDF file
+      const fs = await import('fs');
+      const path = await import('path');
+      const convertedPath = path.join('/tmp', `word_${req.params.downloadId}.pdf`);
+      
+      try {
+        if (await fs.promises.access(convertedPath).then(() => true).catch(() => false)) {
+          // Send the converted file
+          const convertedBuffer = await fs.promises.readFile(convertedPath);
+          
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', `attachment; filename="${fileData.originalName.replace('.docx', '.pdf')}"`);
+          res.send(convertedBuffer);
+          
+          // Clean up files
+          pdfFileStore.delete(`word_${req.params.downloadId}`);
+          fs.unlink(convertedPath, () => {});
+          return;
+        }
+      } catch (error) {
+        console.log('Converted PDF not ready...');
+      }
+
+      // If no converted file, return error
+      res.status(202).json({ 
+        success: false, 
+        error: 'Conversion still in progress. Please try again in a moment.' 
+      });
+
+    } catch (error) {
+      console.error('Word to PDF download error:', error);
+      res.status(500).json({ success: false, error: 'Download failed' });
+    }
+  });
+
+  // PDF to PowerPoint Converter Routes
+  app.post("/api/pdf-to-pptx-converter/upload", upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, error: 'No file provided' });
+      }
+
+      // Validate file type
+      if (req.file.mimetype !== 'application/pdf') {
+        return res.status(400).json({ success: false, error: 'Only PDF files are allowed' });
+      }
+
+      // Validate file size (50MB)
+      if (req.file.size > 50 * 1024 * 1024) {
+        return res.status(400).json({ success: false, error: 'File too large. Maximum size is 50MB' });
+      }
+
+      console.log(`Processing PDF to PPTX: ${req.file.originalname}, Size: ${req.file.size} bytes`);
+
+      // Create a unique download ID
+      const crypto = await import('crypto');
+      const downloadId = crypto.randomBytes(16).toString('hex');
+      const expiryTime = Date.now() + (4 * 60 * 1000); // 4 minutes from now
+      
+      // Store file info for later download
+      pdfFileStore.set(`pptx_${downloadId}`, {
+        originalName: req.file.originalname,
+        buffer: req.file.buffer,
+        uploadTime: Date.now(),
+        expiryTime: expiryTime,
+        processed: false
+      });
+
+      // Start background processing
+      setTimeout(async () => {
+        try {
+          const { spawn } = await import('child_process');
+          const fs = await import('fs');
+          const path = await import('path');
+          
+          // Save PDF temporarily
+          const tempPdfPath = path.join('/tmp', `pptx_${downloadId}.pdf`);
+          await fs.promises.writeFile(tempPdfPath, req.file.buffer);
+          
+          console.log(`PDF saved to: ${tempPdfPath}`);
+          
+          // Process PDF using Python script
+          const pythonProcess = spawn('python3', [
+            path.join(process.cwd(), 'server', 'pdf_to_pptx_converter.py'),
+            tempPdfPath,
+            '/tmp'
+          ], { stdio: 'pipe' });
+
+          let output = '';
+          pythonProcess.stdout.on('data', (data) => {
+            output += data.toString();
+          });
+
+          pythonProcess.on('close', (code) => {
+            try {
+              if (code === 0 && output.trim()) {
+                const result = JSON.parse(output.trim());
+                if (result.success) {
+                  console.log(`PDF to PPTX conversion successful: ${result.output_path}`);
+                }
+              }
+            } catch (e) {
+              console.error('Failed to parse conversion result:', e);
+            }
+            
+            // Mark as processed
+            const fileData = pdfFileStore.get(`pptx_${downloadId}`);
+            if (fileData) {
+              fileData.processed = true;
+              pdfFileStore.set(`pptx_${downloadId}`, fileData);
+            }
+            
+            // Clean up temp PDF file
+            fs.unlink(tempPdfPath, () => {});
+          });
+
+        } catch (error) {
+          console.error('PDF to PPTX processing error:', error);
+        }
+      }, 100);
+
+      // Return immediate response
+      const result = {
+        success: true,
+        download_id: downloadId,
+        expiry_time: expiryTime,
+        file_size: req.file.size,
+        file_type: 'pdf',
+        expires_in_minutes: 4
+      };
+
+      res.json(result);
+
+    } catch (error) {
+      console.error('PDF to PPTX upload error:', error);
+      res.status(500).json({ success: false, error: 'Upload failed' });
+    }
+  });
+
+  app.get("/api/pdf-to-pptx-converter/download/:downloadId", async (req, res) => {
+    try {
+      const fileData = pdfFileStore.get(`pptx_${req.params.downloadId}`);
+      
+      if (!fileData) {
+        return res.status(404).json({ success: false, error: 'File not found or expired' });
+      }
+
+      // Check if expired
+      if (Date.now() > fileData.expiryTime) {
+        pdfFileStore.delete(`pptx_${req.params.downloadId}`);
+        return res.status(410).json({ success: false, error: 'Download link has expired' });
+      }
+
+      // Look for converted PPTX file
+      const fs = await import('fs');
+      const path = await import('path');
+      const convertedPath = path.join('/tmp', `pptx_${req.params.downloadId}.pptx`);
+      
+      try {
+        if (await fs.promises.access(convertedPath).then(() => true).catch(() => false)) {
+          // Send the converted file
+          const convertedBuffer = await fs.promises.readFile(convertedPath);
+          
+          res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
+          res.setHeader('Content-Disposition', `attachment; filename="${fileData.originalName.replace('.pdf', '.pptx')}"`);
+          res.send(convertedBuffer);
+          
+          // Clean up files
+          pdfFileStore.delete(`pptx_${req.params.downloadId}`);
+          fs.unlink(convertedPath, () => {});
+          return;
+        }
+      } catch (error) {
+        console.log('Converted PPTX not ready...');
+      }
+
+      // If no converted file, return error
+      res.status(202).json({ 
+        success: false, 
+        error: 'Conversion still in progress. Please try again in a moment.' 
+      });
+
+    } catch (error) {
+      console.error('PDF to PPTX download error:', error);
+      res.status(500).json({ success: false, error: 'Download failed' });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
