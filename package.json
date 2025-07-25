@@ -45,6 +45,7 @@
     "@types/mime-types": "^3.0.1",
     "@types/multer": "^2.0.0",
     "@types/three": "^0.178.1",
+    "@types/xlsx": "^0.0.35",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
