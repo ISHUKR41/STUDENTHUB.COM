@@ -8,6 +8,19 @@ StudentHub.com is a full-featured, modern, animated, 3D-styled AI, PDF, Image, T
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+### July 25, 2025
+- Completed migration from Replit Agent to Replit environment
+- Fixed React Fragment error in HowItWorks component
+- User requested new PDF to Word converter tool with:
+  - Real backend processing (no AI services)
+  - OCR support using Tesseract
+  - Modern 3D animated UI
+  - Auto-expiring download links (4 minutes)
+  - Responsive design
+  - Secure file handling
+
 ## System Architecture
 
 ### Frontend Architecture
