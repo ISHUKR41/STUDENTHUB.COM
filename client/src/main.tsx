@@ -3,15 +3,10 @@ import App from './App.tsx'
 import './index.css'
 import Lenis from '@studio-freight/lenis'
 
-// Initialize Lenis smooth scrolling
+// Initialize Lenis smooth scrolling with optimized performance settings
 const lenis = new Lenis({
   duration: 1.2,
   easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  direction: 'vertical',
-  gestureDirection: 'vertical',
-  smooth: true,
-  mouseMultiplier: 1,
-  smoothTouch: false,
   touchMultiplier: 2,
   infinite: false,
 })
