@@ -240,14 +240,14 @@ const Tools = () => {
   ];
 
   const imageTools = [
-    { id: 'resize-image', title: 'Resize Image', description: 'Change image dimensions and size', icon: <Settings className="w-6 h-6" />, popular: true },
-    { id: 'crop-image', title: 'Crop Image', description: 'Remove unwanted parts of images', icon: <Crop className="w-6 h-6" />, popular: true },
-    { id: 'compress-image', title: 'Compress Image', description: 'Reduce image file size efficiently', icon: <Settings className="w-6 h-6" />, popular: true },
-    { id: 'convert-image', title: 'Convert Image', description: 'Change format: JPG, PNG, WebP, AVIF', icon: <RefreshCw className="w-6 h-6" />, popular: false },
+    { id: 'crop-image', title: 'Crop Image', description: 'Remove unwanted parts of images with precision controls', icon: <Crop className="w-6 h-6" />, popular: true },
+    { id: 'compress-image', title: 'Compress Image', description: 'Reduce image file size while maintaining quality', icon: <Zap className="w-6 h-6" />, popular: true },
+    { id: 'convert-image', title: 'Convert Image', description: 'Change format: JPG, PNG, WebP, BMP, TIFF', icon: <RefreshCw className="w-6 h-6" />, popular: true },
+    { id: 'resize-image', title: 'Resize Image', description: 'Change image dimensions and size', icon: <Settings className="w-6 h-6" />, popular: false },
     { id: 'pdf-to-image', title: 'PDF ↔ Image', description: 'Convert between PDF and image formats', icon: <FileImage className="w-6 h-6" />, popular: false },
-    { id: 'screenshot-ocr', title: 'Screenshot OCR', description: 'Extract text from screenshots', icon: <Eye className="w-6 h-6" />, popular: true },
+    { id: 'screenshot-ocr', title: 'Screenshot OCR', description: 'Extract text from screenshots', icon: <Eye className="w-6 h-6" />, popular: false },
     { id: 'image-editor', title: 'Image Editor', description: 'Edit images with filters and effects', icon: <Palette className="w-6 h-6" />, popular: false },
-    { id: 'background-remover', title: 'Background Remover', description: 'Remove or replace image backgrounds', icon: <FileX className="w-6 h-6" />, popular: true }
+    { id: 'background-remover', title: 'Background Remover', description: 'Remove or replace image backgrounds', icon: <FileX className="w-6 h-6" />, popular: false }
   ];
 
   const textFileTools = [

@@ -8,7 +8,9 @@ import { CompressPDFTool } from './PDFTools/CompressPDFTool';
 import { PDFToWordTool } from './PDFTools/PDFToWordTool';
 import { PDFToPowerPointTool } from './PDFTools/PDFToPowerPointTool';
 import { ResizeImageTool } from './ImageTools/ResizeImageTool';
-import { CompressImageTool } from './ImageTools/CompressImageTool';
+import CropImageTool from '../ImageTools/CropImageTool';
+import CompressImageTool from '../ImageTools/CompressImageTool';
+import ConvertImageTool from '../ImageTools/ConvertImageTool';
 import { TextToPDFTool } from './TextTools/TextToPDFTool';
 import { ProtectPDFTool } from './PDFTools/ProtectPDFTool';
 
@@ -36,8 +38,12 @@ export const ToolModal: React.FC<ToolModalProps> = ({ isOpen, onClose, toolId, t
         return <PDFToPowerPointTool />;
       case 'resize-image':
         return <ResizeImageTool />;
+      case 'crop-image':
+        return <CropImageTool />;
       case 'compress-image':
         return <CompressImageTool />;
+      case 'convert-image':
+        return <ConvertImageTool />;
       case 'text-to-pdf':
         return <TextToPDFTool />;
       default:

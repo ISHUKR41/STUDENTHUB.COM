@@ -284,37 +284,70 @@ const Contact = () => {
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* Hero Section */}
+      {/* Enhanced Hero Section with 3D Effects */}
       <section className="relative min-h-screen flex items-center justify-center px-4 pt-20">
-        <div className="text-center space-y-8 animate-fadeInUp">
-          <div className="space-y-4">
-            <h1 className="text-6xl md:text-8xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Get in Touch
-            </h1>
-            <p className="text-xl md:text-2xl text-foreground-secondary max-w-3xl mx-auto">
-              We're here to help—questions, feedback & support
+        {/* Floating gradient orbs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-gradient-primary rounded-full opacity-10 animate-float blur-xl"></div>
+          <div className="absolute top-3/4 right-1/4 w-24 h-24 bg-gradient-secondary rounded-full opacity-10 animate-float-delay blur-xl"></div>
+          <div className="absolute top-1/2 left-1/3 w-16 h-16 bg-gradient-accent rounded-full opacity-15 animate-bounce blur-lg"></div>
+        </div>
+
+        <div className="text-center space-y-8 animate-fadeInUp relative z-10">
+          <div className="space-y-6 perspective-1000">
+            <div className="inline-block hover:scale-105 transition-all duration-700 preserve-3d">
+              <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold bg-gradient-primary bg-clip-text text-transparent hover:animate-pulse">
+                💬 Get in Touch
+              </h1>
+              <div className="w-full h-2 bg-gradient-primary rounded-full opacity-50 mt-4 animate-pulse"></div>
+            </div>
+            <p className="text-xl md:text-2xl lg:text-3xl text-foreground-secondary max-w-4xl mx-auto leading-relaxed">
+              📚 <span className="text-primary font-semibold">Questions?</span> 
+              🎯 <span className="text-secondary font-semibold">Need materials?</span> 
+              💡 <span className="text-accent font-semibold">Suggestions?</span>
+              <br className="hidden md:block" />
+              <span className="text-primary text-2xl">We're here to help you succeed! 🚀</span>
             </p>
           </div>
           
-          <div className="flex flex-wrap justify-center gap-8 text-center">
-            <div className="space-y-2">
-              <div className="text-4xl font-bold text-primary flex items-center justify-center">
-                <Clock className="w-8 h-8 mr-2" />
-                24/7
+          {/* Enhanced stats with 3D cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="glassmorphism p-8 hover:scale-110 hover:rotate-1 transition-all duration-500 cursor-pointer group">
+              <div className="text-5xl font-bold text-primary flex items-center justify-center mb-3 group-hover:animate-bounce">
+                <Clock className="w-10 h-10 mr-3 group-hover:rotate-12 transition-transform duration-300" />
+                ⚡ 24/7
               </div>
-              <div className="text-sm text-foreground-secondary">Support Available</div>
+              <div className="text-lg font-medium text-foreground-secondary">Support Available</div>
+              <div className="text-sm text-primary mt-2">Always online for you!</div>
             </div>
-            <div className="space-y-2">
-              <div className="text-4xl font-bold text-primary flex items-center justify-center">
-                <Star className="w-8 h-8 mr-2" />
-                99.9%
+            <div className="glassmorphism p-8 hover:scale-110 hover:rotate-1 transition-all duration-500 cursor-pointer group">
+              <div className="text-5xl font-bold text-secondary flex items-center justify-center mb-3 group-hover:animate-bounce">
+                <Star className="w-10 h-10 mr-3 group-hover:rotate-12 transition-transform duration-300" />
+                🎯 99.9%
               </div>
-              <div className="text-sm text-foreground-secondary">Response Rate</div>
+              <div className="text-lg font-medium text-foreground-secondary">Response Rate</div>
+              <div className="text-sm text-secondary mt-2">We never miss a message!</div>
             </div>
-            <div className="space-y-2">
-              <div className="text-4xl font-bold text-primary">1-3</div>
-              <div className="text-sm text-foreground-secondary">Days Response Time</div>
+            <div className="glassmorphism p-8 hover:scale-110 hover:rotate-1 transition-all duration-500 cursor-pointer group">
+              <div className="text-5xl font-bold text-accent flex items-center justify-center mb-3 group-hover:animate-bounce">
+                <HelpCircle className="w-10 h-10 mr-3 group-hover:rotate-12 transition-transform duration-300" />
+                🚀 1-3
+              </div>
+              <div className="text-lg font-medium text-foreground-secondary">Days Response Time</div>
+              <div className="text-sm text-accent mt-2">Super fast assistance!</div>
             </div>
+          </div>
+
+          {/* Call-to-action buttons with enhanced 3D effects */}
+          <div className="flex flex-col sm:flex-row justify-center gap-6 pt-8">
+            <Button size="lg" className="btn-hero group hover:scale-110 hover:rotate-1 transition-all duration-300 shadow-glow text-lg px-8 py-4">
+              <Mail className="w-6 h-6 mr-3 group-hover:rotate-12 group-hover:scale-125 transition-all duration-300" />
+              📧 Email Us Now
+            </Button>
+            <Button size="lg" variant="outline" className="border-2 border-primary hover:bg-primary/10 hover:scale-110 hover:rotate-1 transition-all duration-300 group text-lg px-8 py-4">
+              <Phone className="w-6 h-6 mr-3 group-hover:bounce transition-all duration-300" />
+              📞 Call Support
+            </Button>
           </div>
         </div>
       </section>
@@ -464,8 +497,41 @@ const Contact = () => {
 
           <Card className="shadow-glow border-2 border-primary/20">
             <CardContent className="p-8">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold mb-4">📝 Quick Request Form</h3>
+                <p className="text-foreground-secondary mb-6">
+                  Use our Google Form for the fastest response to your book and material requests:
+                </p>
+                <div className="relative">
+                  <iframe 
+                    src="https://docs.google.com/forms/d/e/1FAIpQLSczWJI6cXslwpNgayBkuH0pnKfCZx0weAYi2lbnkLLpb76Myg/viewform?embedded=true" 
+                    width="100%" 
+                    height="800" 
+                    frameBorder="0" 
+                    marginHeight="0" 
+                    marginWidth="0"
+                    className="rounded-lg shadow-glow border border-primary/20"
+                  >
+                    Loading…
+                  </iframe>
+                </div>
+                <div className="mt-6 p-4 bg-background-tertiary rounded-lg">
+                  <p className="text-sm text-foreground-secondary">
+                    Having trouble with the form? You can also{' '}
+                    <a 
+                      href="https://docs.google.com/forms/d/e/1FAIpQLSczWJI6cXslwpNgayBkuH0pnKfCZx0weAYi2lbnkLLpb76Myg/viewform" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      open it in a new tab
+                    </a>
+                  </p>
+                </div>
+              </div>
+
               {!isSubmitted ? (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6 mt-8 pt-8 border-t border-border/20">
                   {/* Personal Information */}
                   <div className="border-b border-border/20 pb-6">
                     <h3 className="text-lg font-semibold mb-4 flex items-center">

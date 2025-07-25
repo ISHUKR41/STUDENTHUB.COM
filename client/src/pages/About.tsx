@@ -323,6 +323,14 @@ const About = () => {
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Header Navigation */}
       <Header />
+
+      {/* Floating 3D particles background */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/6 w-24 h-24 bg-primary/10 rounded-full animate-float blur-xl"></div>
+        <div className="absolute top-2/3 right-1/4 w-32 h-32 bg-secondary/10 rounded-full animate-float-delay blur-2xl"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-16 h-16 bg-accent/15 rounded-full animate-bounce blur-lg"></div>
+        <div className="absolute top-1/2 right-1/6 w-20 h-20 bg-primary/8 rounded-full animate-pulse blur-xl"></div>
+      </div>
       
       {/* 3D Canvas Background */}
       <canvas 
@@ -331,41 +339,64 @@ const About = () => {
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* Hero Section */}
+      {/* Enhanced Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-4 pt-20">
-        <div className="text-center space-y-8 animate-fadeInUp">
-          <div className="space-y-4">
-            <h1 className="text-6xl md:text-8xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              About StudentHub.com
-            </h1>
-            <p className="text-xl md:text-2xl text-foreground-secondary max-w-3xl mx-auto">
-              Empowering Every Student—from Class 9 to PhD
+        <div className="text-center space-y-12 animate-fadeInUp relative z-10">
+          <div className="space-y-8 perspective-1000">
+            <div className="inline-block hover:scale-105 transition-all duration-700 preserve-3d">
+              <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold bg-gradient-primary bg-clip-text text-transparent hover:animate-pulse">
+                📚 About StudentHub.com
+              </h1>
+              <div className="w-full h-2 bg-gradient-primary rounded-full opacity-50 mt-4 animate-pulse"></div>
+            </div>
+            <p className="text-xl md:text-2xl lg:text-3xl text-foreground-secondary max-w-4xl mx-auto leading-relaxed">
+              🎯 <span className="text-primary font-bold">Empowering Every Student</span> 
+              <br className="hidden md:block" />
+              <span className="text-secondary font-semibold">From Class 9 to PhD Research</span> 
+              🚀 <span className="text-accent font-semibold">Success Made Simple!</span>
             </p>
           </div>
           
-          <div className="flex flex-wrap justify-center gap-8 text-center">
-            <div className="space-y-2">
-              <div className="text-4xl font-bold text-primary animate-bounce">25,000+</div>
-              <div className="text-sm text-foreground-secondary">Question Papers</div>
+          {/* Enhanced stats with 3D glassmorphism cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="glassmorphism p-8 hover:scale-110 hover:rotate-1 transition-all duration-500 cursor-pointer group">
+              <div className="text-6xl font-bold text-primary mb-4 group-hover:animate-bounce">
+                📄 25,000+
+              </div>
+              <div className="text-lg font-medium text-foreground-secondary">Question Papers</div>
+              <div className="text-sm text-primary mt-2">Updated Daily!</div>
             </div>
-            <div className="space-y-2">
-              <div className="text-4xl font-bold text-primary animate-bounce" style={{animationDelay: '0.1s'}}>170M+</div>
-              <div className="text-sm text-foreground-secondary">Users</div>
+            <div className="glassmorphism p-8 hover:scale-110 hover:rotate-1 transition-all duration-500 cursor-pointer group">
+              <div className="text-6xl font-bold text-secondary mb-4 group-hover:animate-bounce">
+                👥 170M+
+              </div>
+              <div className="text-lg font-medium text-foreground-secondary">Happy Users</div>
+              <div className="text-sm text-secondary mt-2">Across India!</div>
             </div>
-            <div className="space-y-2">
-              <div className="text-4xl font-bold text-primary animate-bounce" style={{animationDelay: '0.2s'}}>22+</div>
-              <div className="text-sm text-foreground-secondary">Languages</div>
+            <div className="glassmorphism p-8 hover:scale-110 hover:rotate-1 transition-all duration-500 cursor-pointer group">
+              <div className="text-6xl font-bold text-accent mb-4 group-hover:animate-bounce">
+                🌐 22+
+              </div>
+              <div className="text-lg font-medium text-foreground-secondary">Languages</div>
+              <div className="text-sm text-accent mt-2">Regional Support!</div>
             </div>
           </div>
 
-          <Button 
-            onClick={toggleAnimation}
-            variant="outline"
-            className="mt-8 group"
-          >
-            {isAnimationPlaying ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
-            {isAnimationPlaying ? 'Pause' : 'Play'} 3D Animation
-          </Button>
+          {/* Enhanced control buttons */}
+          <div className="flex flex-col sm:flex-row justify-center gap-6 pt-8">
+            <Button 
+              onClick={toggleAnimation}
+              variant="outline"
+              className="border-2 border-primary hover:bg-primary/10 hover:scale-110 transition-all duration-300 group text-lg px-8 py-4"
+            >
+              {isAnimationPlaying ? <Pause className="w-6 h-6 mr-3 group-hover:scale-125 transition-all duration-300" /> : <Play className="w-6 h-6 mr-3 group-hover:scale-125 transition-all duration-300" />}
+              {isAnimationPlaying ? '⏸️ Pause' : '▶️ Play'} 3D Animation
+            </Button>
+            <Button size="lg" className="btn-hero group hover:scale-110 transition-all duration-300 shadow-glow text-lg px-8 py-4">
+              <Users className="w-6 h-6 mr-3 group-hover:rotate-12 transition-all duration-300" />
+              🤝 Join Community
+            </Button>
+          </div>
         </div>
       </section>
 

@@ -36,15 +36,21 @@ export const Header: React.FC = () => {
       }`}
     >
       <nav className="container mx-auto px-3 sm:px-4 lg:px-6 flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center space-x-1 sm:space-x-2">
-          <div className="p-1.5 sm:p-2 bg-gradient-primary rounded-lg">
-            <GraduationCap className="h-4 w-4 sm:h-5 sm:h-5 md:h-6 md:w-6 text-white" />
+        {/* Enhanced Logo with 3D effects */}
+        <div className="flex items-center space-x-1 sm:space-x-2 group cursor-pointer hover:scale-105 transition-all duration-300">
+          <div className="relative">
+            <div className="absolute -inset-1 bg-gradient-primary rounded-xl opacity-20 group-hover:animate-pulse blur-sm"></div>
+            <div className="p-1.5 sm:p-2 bg-gradient-primary rounded-lg group-hover:shadow-glow transition-all duration-300 relative z-10">
+              <GraduationCap className="h-4 w-4 sm:h-5 sm:h-5 md:h-6 md:w-6 text-white group-hover:rotate-12 transition-transform duration-300" />
+            </div>
           </div>
-          <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold gradient-text">
-            <span className="hidden sm:inline">STUDENTHUB.COM</span>
-            <span className="sm:hidden">STUDENTHUB</span>
-          </span>
+          <div className="relative">
+            <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold gradient-text group-hover:animate-pulse">
+              <span className="hidden sm:inline">📚 STUDENTHUB.COM</span>
+              <span className="sm:hidden">📚 STUDENTHUB</span>
+            </span>
+            <div className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-gradient-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+          </div>
         </div>
 
         {/* Desktop Navigation */}
