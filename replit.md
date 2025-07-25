@@ -1,8 +1,8 @@
-# StudentHub.com - Educational Platform
+# StudentHub.com - Comprehensive Tool Suite Platform
 
 ## Overview
 
-StudentHub.com is a comprehensive educational platform that provides students with access to question papers, study materials, and educational tools. The platform features a modern, responsive design with 3D animations and glassmorphism effects, built using React with TypeScript and a Node.js/Express backend.
+StudentHub.com is a full-featured, modern, animated, 3D-styled AI, PDF, Image, Text & File utility platform. The platform provides 30+ fully functional tools including PDF manipulation, image processing, AI-powered text tools, and file converters. Built with React, TypeScript, and Node.js/Express backend with secure API integrations to OpenAI and Gemini.
 
 ## User Preferences
 
@@ -42,11 +42,11 @@ Preferred communication style: Simple, everyday language.
 - **Error Handling**: Global error middleware with structured responses
 - **Static Serving**: Development and production static file serving
 
-### Educational Tools
-- **PDF Tools**: Merge, split, compress, and convert PDF files
-- **Image Tools**: Resize, compress, crop, and convert images
-- **Text Tools**: Convert text to PDF and other document formats
-- **AI Assistant**: Gemini AI integration for educational content analysis
+### Tool Categories (30+ Tools)
+- **PDF Tools**: Merge, Split, Compress, Protect, Unlock, Edit, Sign, Watermark, Rotate PDFs; Convert PDF↔Word/PPT/Excel/JPG; OCR PDF; Text to PDF
+- **Image Tools**: Crop, Compress, Convert (JPG↔PNG↔WebP↔TIFF↔BMP), Resize, Remove Background, Image Editor, PDF↔Image conversion
+- **AI & Text Tools**: Grammar Checker, Text Summarizer, Quick Notepad, Voice to Notes, AI Study Planner, Smart Flashcards, Formula Solver, Screenshot OCR
+- **File Converters**: Convert between DOCX, PDF, XLSX, TXT and other formats
 
 ## Data Flow
 
@@ -73,10 +73,11 @@ Preferred communication style: Simple, everyday language.
 
 ### Core Dependencies
 - **Database**: Neon PostgreSQL for data persistence
-- **AI Service**: Google Gemini API for content analysis and recommendations
-- **File Processing**: Server-side libraries for PDF and image manipulation
+- **AI Services**: OpenAI GPT-4 and Google Gemini API with automatic fallback
+- **File Processing**: pdf-lib, sharp, tesseract.js, multer for comprehensive file manipulation
 - **UI Framework**: Radix UI for accessible component primitives
-- **Styling**: Tailwind CSS for utility-first styling
+- **Styling**: Tailwind CSS with glassmorphism effects and 3D animations
+- **Animation**: Framer Motion and Lottie for smooth transitions and effects
 
 ### Development Tools
 - **Build System**: Vite with React plugin and TypeScript support

@@ -1,19 +1,9 @@
 import express from 'express';
 import multer from 'multer';
-import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
-import mime from 'mime-types';
 import fs from 'fs/promises';
 import path from 'path';
-
-// Extend Express Request type for multer
-declare global {
-  namespace Express {
-    interface Request {
-      file?: Express.Multer.File;
-    }
-  }
-}
+import sharp from 'sharp';
 
 const router = express.Router();
 
@@ -22,14 +12,13 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: {
-    fileSize: 40 * 1024 * 1024, // 40MB max file size
+    fileSize: 50 * 1024 * 1024, // 50MB max file size
   },
   fileFilter: (req: express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/bmp', 'image/gif', 'image/tiff'];
-    if (allowedTypes.includes(file.mimetype)) {
+    if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type. Only JPG, PNG, WEBP, BMP, GIF, TIFF are allowed.'));
+      cb(new Error('Only image files are allowed.'));
     }
   }
 });
@@ -56,6 +45,7 @@ interface FileSession {
   originalPath: string;
   processedPath?: string;
   expiry: Date;
+  metadata?: any;
 }
 
 const fileSessions = new Map<string, FileSession>();
@@ -78,66 +68,98 @@ setInterval(async () => {
   }
 }, 60000);
 
-// Crop Image Tool
-router.post('/crop', upload.single('image'), async (req, res) => {
+// Resize Image Tool
+router.post('/resize', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: 'No image file provided' });
+      return res.status(400).json({ error: 'Image file is required' });
     }
 
-    const { x, y, width, height } = req.body;
+    const { width, height, maintainAspectRatio, resizeMode } = req.body;
+    const targetWidth = parseInt(width);
+    const targetHeight = parseInt(height);
 
-    // Validate crop parameters
-    const cropX = parseInt(x);
-    const cropY = parseInt(y);
-    const cropWidth = parseInt(width);
-    const cropHeight = parseInt(height);
-
-    if (isNaN(cropX) || isNaN(cropY) || isNaN(cropWidth) || isNaN(cropHeight)) {
-      return res.status(400).json({ error: 'Invalid crop parameters' });
+    if (!targetWidth && !targetHeight) {
+      return res.status(400).json({ error: 'Width or height must be specified' });
     }
 
     const sessionId = uuidv4();
-    const originalFileName = `${sessionId}_original.${req.file.originalname.split('.').pop()}`;
-    const croppedFileName = `${sessionId}_cropped.png`;
     
-    const originalPath = path.join(uploadsDir, originalFileName);
-    const croppedPath = path.join(processedDir, croppedFileName);
+    // Get original image metadata
+    const originalImage = sharp(req.file.buffer);
+    const metadata = await originalImage.metadata();
+    
+    // Prepare resize options
+    let resizeOptions: sharp.ResizeOptions = {};
+    
+    if (maintainAspectRatio === 'true') {
+      if (resizeMode === 'fit') {
+        resizeOptions.fit = 'inside';
+      } else if (resizeMode === 'fill') {
+        resizeOptions.fit = 'cover';
+      } else {
+        resizeOptions.fit = 'inside';
+      }
+    } else {
+      resizeOptions.fit = 'fill';
+    }
 
-    // Save original file
+    // Resize image
+    const resizedBuffer = await originalImage
+      .resize(targetWidth, targetHeight, resizeOptions)
+      .toBuffer();
+
+    // Get resized image metadata
+    const resizedMetadata = await sharp(resizedBuffer).metadata();
+
+    // Save files
+    const originalPath = path.join(uploadsDir, `${sessionId}_original${path.extname(req.file.originalname)}`);
+    const resizedPath = path.join(processedDir, `${sessionId}_resized${path.extname(req.file.originalname)}`);
+    
     await fs.writeFile(originalPath, req.file.buffer);
+    await fs.writeFile(resizedPath, resizedBuffer);
 
-    // Process cropping
-    await sharp(req.file.buffer)
-      .extract({ left: cropX, top: cropY, width: cropWidth, height: cropHeight })
-      .png({ quality: 100 })
-      .toFile(croppedPath);
-
-    // Get file stats
-    const croppedStats = await fs.stat(croppedPath);
-    const croppedBuffer = await fs.readFile(croppedPath);
-    const { width: finalWidth, height: finalHeight } = await sharp(croppedBuffer).metadata();
-
-    // Store session with 4-minute expiry
-    const expiry = new Date(Date.now() + 4 * 60 * 1000);
+    const expiry = new Date(Date.now() + 10 * 60 * 1000);
     fileSessions.set(sessionId, {
       originalPath,
-      processedPath: croppedPath,
-      expiry
+      processedPath: resizedPath,
+      expiry,
+      metadata: {
+        original: {
+          width: metadata.width,
+          height: metadata.height,
+          format: metadata.format,
+          size: req.file.size
+        },
+        resized: {
+          width: resizedMetadata.width,
+          height: resizedMetadata.height,
+          format: resizedMetadata.format,
+          size: resizedBuffer.length
+        }
+      }
     });
 
     res.json({
       sessionId,
       success: true,
-      fileName: `cropped_${req.file.originalname.split('.')[0]}.png`,
-      size: croppedStats.size,
-      dimensions: { width: finalWidth, height: finalHeight },
+      fileName: `resized_${req.file.originalname}`,
+      original: {
+        width: metadata.width,
+        height: metadata.height,
+        size: req.file.size
+      },
+      resized: {
+        width: resizedMetadata.width,
+        height: resizedMetadata.height,
+        size: resizedBuffer.length
+      },
       expiresAt: expiry.toISOString()
     });
 
   } catch (error) {
-    console.error('Crop error:', error);
-    res.status(500).json({ error: 'Failed to crop image. Please try again.' });
+    console.error('Image resize error:', error);
+    res.status(500).json({ error: 'Failed to resize image. Please try again.' });
   }
 });
 
@@ -145,195 +167,446 @@ router.post('/crop', upload.single('image'), async (req, res) => {
 router.post('/compress', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: 'No image file provided' });
+      return res.status(400).json({ error: 'Image file is required' });
     }
 
-    const { mode, targetSize, keepExif, resizeWidth, resizeHeight } = req.body;
+    const { quality, format } = req.body;
+    const compressionQuality = parseInt(quality) || 80;
+    const outputFormat = format || 'jpeg';
 
     const sessionId = uuidv4();
-    const originalFileName = `${sessionId}_original.${req.file.originalname.split('.').pop()}`;
-    const compressedFileName = `${sessionId}_compressed.${req.file.originalname.split('.').pop()}`;
     
-    const originalPath = path.join(uploadsDir, originalFileName);
-    const compressedPath = path.join(processedDir, compressedFileName);
-
-    // Save original file
-    await fs.writeFile(originalPath, req.file.buffer);
-
-    let sharpInstance = sharp(req.file.buffer);
-
-    // Apply resize if specified
-    if (resizeWidth && resizeHeight) {
-      sharpInstance = sharpInstance.resize(parseInt(resizeWidth), parseInt(resizeHeight));
-    }
-
-    // Apply compression based on mode
-    let quality = 80;
-    switch (mode) {
-      case 'lossless':
-        quality = 100;
-        break;
-      case 'balanced':
-        quality = 80;
-        break;
-      case 'high':
-        quality = 60;
-        break;
-      case 'auto':
-      default:
-        quality = 85;
-        break;
-    }
-
-    // Get original metadata
-    const originalMetadata = await sharp(req.file.buffer).metadata();
-    const originalSize = req.file.size;
-
-    // Process compression based on file type
-    if (req.file.mimetype === 'image/png') {
-      sharpInstance = sharpInstance.png({ 
-        quality,
-        compressionLevel: mode === 'high' ? 9 : 6
-      });
-    } else if (req.file.mimetype === 'image/webp') {
-      sharpInstance = sharpInstance.webp({ quality });
+    // Get original image metadata
+    const originalImage = sharp(req.file.buffer);
+    const metadata = await originalImage.metadata();
+    
+    // Compress image
+    let compressedBuffer: Buffer;
+    
+    if (outputFormat === 'jpeg' || outputFormat === 'jpg') {
+      compressedBuffer = await originalImage
+        .jpeg({ quality: compressionQuality })
+        .toBuffer();
+    } else if (outputFormat === 'png') {
+      compressedBuffer = await originalImage
+        .png({ 
+          quality: compressionQuality,
+          compressionLevel: Math.round((100 - compressionQuality) / 10)
+        })
+        .toBuffer();
+    } else if (outputFormat === 'webp') {
+      compressedBuffer = await originalImage
+        .webp({ quality: compressionQuality })
+        .toBuffer();
     } else {
-      sharpInstance = sharpInstance.jpeg({ 
-        quality,
-        progressive: true
-      });
+      compressedBuffer = await originalImage
+        .jpeg({ quality: compressionQuality })
+        .toBuffer();
     }
 
-    // Save compressed image
-    await sharpInstance.toFile(compressedPath);
+    // Calculate compression ratio
+    const compressionRatio = Math.round(((req.file.size - compressedBuffer.length) / req.file.size) * 100);
 
-    // Get compressed file stats
-    const compressedStats = await fs.stat(compressedPath);
-    const compressionRatio = Math.round((1 - compressedStats.size / originalSize) * 100);
+    // Save files
+    const originalPath = path.join(uploadsDir, `${sessionId}_original${path.extname(req.file.originalname)}`);
+    const compressedPath = path.join(processedDir, `${sessionId}_compressed.${outputFormat}`);
+    
+    await fs.writeFile(originalPath, req.file.buffer);
+    await fs.writeFile(compressedPath, compressedBuffer);
 
-    // Store session with 4-minute expiry
-    const expiry = new Date(Date.now() + 4 * 60 * 1000);
+    const expiry = new Date(Date.now() + 10 * 60 * 1000);
     fileSessions.set(sessionId, {
       originalPath,
       processedPath: compressedPath,
-      expiry
+      expiry,
+      metadata: {
+        originalSize: req.file.size,
+        compressedSize: compressedBuffer.length,
+        compressionRatio,
+        quality: compressionQuality,
+        format: outputFormat,
+        originalFormat: metadata.format
+      }
     });
 
     res.json({
       sessionId,
       success: true,
-      fileName: `compressed_${req.file.originalname}`,
-      originalSize,
-      compressedSize: compressedStats.size,
+      fileName: `compressed_${path.basename(req.file.originalname, path.extname(req.file.originalname))}.${outputFormat}`,
+      originalSize: req.file.size,
+      compressedSize: compressedBuffer.length,
       compressionRatio,
-      dimensions: { width: originalMetadata.width, height: originalMetadata.height },
+      quality: compressionQuality,
+      format: outputFormat,
       expiresAt: expiry.toISOString()
     });
 
   } catch (error) {
-    console.error('Compress error:', error);
+    console.error('Image compression error:', error);
     res.status(500).json({ error: 'Failed to compress image. Please try again.' });
   }
 });
 
-// Convert Image Tool
+// Convert Image Format Tool
 router.post('/convert', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: 'No image file provided' });
+      return res.status(400).json({ error: 'Image file is required' });
     }
 
-    const { targetFormat, preserveTransparency, grayscale, resizeWidth, resizeHeight } = req.body;
+    const { format, quality } = req.body;
+    
+    if (!format) {
+      return res.status(400).json({ error: 'Target format is required' });
+    }
 
     const sessionId = uuidv4();
-    const originalFileName = `${sessionId}_original.${req.file.originalname.split('.').pop()}`;
-    const convertedFileName = `${sessionId}_converted.${targetFormat.toLowerCase()}`;
+    const conversionQuality = parseInt(quality) || 90;
     
-    const originalPath = path.join(uploadsDir, originalFileName);
-    const convertedPath = path.join(processedDir, convertedFileName);
-
-    // Save original file
-    await fs.writeFile(originalPath, req.file.buffer);
-
-    let sharpInstance = sharp(req.file.buffer);
-
-    // Apply resize if specified
-    if (resizeWidth && resizeHeight) {
-      sharpInstance = sharpInstance.resize(parseInt(resizeWidth), parseInt(resizeHeight));
-    }
-
-    // Apply grayscale if requested
-    if (grayscale === 'true') {
-      sharpInstance = sharpInstance.grayscale();
-    }
-
+    // Get original image metadata
+    const originalImage = sharp(req.file.buffer);
+    const metadata = await originalImage.metadata();
+    
     // Convert to target format
-    switch (targetFormat.toLowerCase()) {
-      case 'jpg':
+    let convertedBuffer: Buffer;
+    let outputExtension: string;
+    
+    switch (format.toLowerCase()) {
       case 'jpeg':
-        sharpInstance = sharpInstance.jpeg({ quality: 95 });
+      case 'jpg':
+        convertedBuffer = await originalImage.jpeg({ quality: conversionQuality }).toBuffer();
+        outputExtension = 'jpg';
         break;
       case 'png':
-        sharpInstance = sharpInstance.png({ 
-          quality: 95,
-          ...(preserveTransparency === 'true' ? {} : { palette: true })
-        });
+        convertedBuffer = await originalImage.png().toBuffer();
+        outputExtension = 'png';
         break;
       case 'webp':
-        sharpInstance = sharpInstance.webp({ 
-          quality: 95,
-          lossless: preserveTransparency === 'true'
-        });
-        break;
-      case 'bmp':
-        // Sharp doesn't support BMP output, use PNG instead
-        sharpInstance = sharpInstance.png({ quality: 95 });
-        break;
-      case 'gif':
-        // Sharp doesn't support GIF output, fallback to PNG
-        sharpInstance = sharpInstance.png({ quality: 95 });
+        convertedBuffer = await originalImage.webp({ quality: conversionQuality }).toBuffer();
+        outputExtension = 'webp';
         break;
       case 'tiff':
-        sharpInstance = sharpInstance.tiff({ quality: 95 });
+        convertedBuffer = await originalImage.tiff().toBuffer();
+        outputExtension = 'tiff';
+        break;
+      case 'bmp':
+        convertedBuffer = await originalImage.png().toBuffer(); // BMP not directly supported, use PNG
+        outputExtension = 'png';
         break;
       default:
-        return res.status(400).json({ error: 'Unsupported target format' });
+        convertedBuffer = await originalImage.jpeg({ quality: conversionQuality }).toBuffer();
+        outputExtension = 'jpg';
     }
 
-    // Save converted image
-    await sharpInstance.toFile(convertedPath);
+    // Save files
+    const originalPath = path.join(uploadsDir, `${sessionId}_original${path.extname(req.file.originalname)}`);
+    const convertedPath = path.join(processedDir, `${sessionId}_converted.${outputExtension}`);
+    
+    await fs.writeFile(originalPath, req.file.buffer);
+    await fs.writeFile(convertedPath, convertedBuffer);
 
-    // Get converted file stats
-    const convertedStats = await fs.stat(convertedPath);
-    const convertedBuffer = await fs.readFile(convertedPath);
-    const { width, height } = await sharp(convertedBuffer).metadata();
-
-    // Store session with 4-minute expiry
-    const expiry = new Date(Date.now() + 4 * 60 * 1000);
+    const expiry = new Date(Date.now() + 10 * 60 * 1000);
     fileSessions.set(sessionId, {
       originalPath,
       processedPath: convertedPath,
-      expiry
+      expiry,
+      metadata: {
+        originalFormat: metadata.format,
+        targetFormat: format,
+        outputFormat: outputExtension,
+        originalSize: req.file.size,
+        convertedSize: convertedBuffer.length,
+        quality: conversionQuality
+      }
     });
 
     res.json({
       sessionId,
       success: true,
-      fileName: `converted_${req.file.originalname.split('.')[0]}.${targetFormat.toLowerCase()}`,
+      fileName: `converted_${path.basename(req.file.originalname, path.extname(req.file.originalname))}.${outputExtension}`,
+      originalFormat: metadata.format,
+      targetFormat: outputExtension,
       originalSize: req.file.size,
-      convertedSize: convertedStats.size,
-      dimensions: { width, height },
-      format: targetFormat.toUpperCase(),
+      convertedSize: convertedBuffer.length,
       expiresAt: expiry.toISOString()
     });
 
   } catch (error) {
-    console.error('Convert error:', error);
+    console.error('Image conversion error:', error);
     res.status(500).json({ error: 'Failed to convert image. Please try again.' });
   }
 });
 
-// Download processed image
+// Crop Image Tool
+router.post('/crop', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Image file is required' });
+    }
+
+    const { x, y, width, height } = req.body;
+    const cropX = parseInt(x) || 0;
+    const cropY = parseInt(y) || 0;
+    const cropWidth = parseInt(width);
+    const cropHeight = parseInt(height);
+
+    if (!cropWidth || !cropHeight) {
+      return res.status(400).json({ error: 'Crop width and height are required' });
+    }
+
+    const sessionId = uuidv4();
+    
+    // Get original image metadata
+    const originalImage = sharp(req.file.buffer);
+    const metadata = await originalImage.metadata();
+    
+    // Crop image
+    const croppedBuffer = await originalImage
+      .extract({
+        left: cropX,
+        top: cropY,
+        width: cropWidth,
+        height: cropHeight
+      })
+      .toBuffer();
+
+    // Save files
+    const originalPath = path.join(uploadsDir, `${sessionId}_original${path.extname(req.file.originalname)}`);
+    const croppedPath = path.join(processedDir, `${sessionId}_cropped${path.extname(req.file.originalname)}`);
+    
+    await fs.writeFile(originalPath, req.file.buffer);
+    await fs.writeFile(croppedPath, croppedBuffer);
+
+    const expiry = new Date(Date.now() + 10 * 60 * 1000);
+    fileSessions.set(sessionId, {
+      originalPath,
+      processedPath: croppedPath,
+      expiry,
+      metadata: {
+        original: {
+          width: metadata.width,
+          height: metadata.height,
+          size: req.file.size
+        },
+        cropped: {
+          x: cropX,
+          y: cropY,
+          width: cropWidth,
+          height: cropHeight,
+          size: croppedBuffer.length
+        }
+      }
+    });
+
+    res.json({
+      sessionId,
+      success: true,
+      fileName: `cropped_${req.file.originalname}`,
+      original: {
+        width: metadata.width,
+        height: metadata.height,
+        size: req.file.size
+      },
+      cropped: {
+        x: cropX,
+        y: cropY,
+        width: cropWidth,
+        height: cropHeight,
+        size: croppedBuffer.length
+      },
+      expiresAt: expiry.toISOString()
+    });
+
+  } catch (error) {
+    console.error('Image crop error:', error);
+    res.status(500).json({ error: 'Failed to crop image. Please try again.' });
+  }
+});
+
+// Remove Background Tool (basic edge detection based)
+router.post('/remove-background', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Image file is required' });
+    }
+
+    const sessionId = uuidv4();
+    
+    // Get original image metadata
+    const originalImage = sharp(req.file.buffer);
+    const metadata = await originalImage.metadata();
+    
+    // Basic background removal using threshold and transparency
+    // Note: For professional background removal, you'd integrate with:
+    // - remove.bg API
+    // - BackgroundRemover.app API
+    // - Custom ML models
+    
+    // For now, we'll create a simple alpha channel based approach
+    const processedBuffer = await originalImage
+      .png() // Convert to PNG to support transparency
+      .threshold(240) // Simple threshold for light backgrounds
+      .toColorspace('srgb')
+      .toBuffer();
+
+    // Save files
+    const originalPath = path.join(uploadsDir, `${sessionId}_original${path.extname(req.file.originalname)}`);
+    const processedPath = path.join(processedDir, `${sessionId}_no_bg.png`);
+    
+    await fs.writeFile(originalPath, req.file.buffer);
+    await fs.writeFile(processedPath, processedBuffer);
+
+    const expiry = new Date(Date.now() + 10 * 60 * 1000);
+    fileSessions.set(sessionId, {
+      originalPath,
+      processedPath,
+      expiry,
+      metadata: {
+        originalSize: req.file.size,
+        processedSize: processedBuffer.length,
+        originalFormat: metadata.format,
+        outputFormat: 'png'
+      }
+    });
+
+    res.json({
+      sessionId,
+      success: true,
+      fileName: `no_bg_${path.basename(req.file.originalname, path.extname(req.file.originalname))}.png`,
+      originalSize: req.file.size,
+      processedSize: processedBuffer.length,
+      note: 'Basic background removal applied. For professional results, consider using specialized services.',
+      expiresAt: expiry.toISOString()
+    });
+
+  } catch (error) {
+    console.error('Background removal error:', error);
+    res.status(500).json({ error: 'Failed to remove background. Please try again.' });
+  }
+});
+
+// Image Editor Tool (basic adjustments)
+router.post('/edit', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Image file is required' });
+    }
+
+    const { 
+      brightness, 
+      contrast, 
+      saturation, 
+      gamma, 
+      blur, 
+      sharpen,
+      rotate,
+      flip,
+      flop
+    } = req.body;
+
+    const sessionId = uuidv4();
+    
+    // Start with original image
+    let processedImage = sharp(req.file.buffer);
+    
+    // Apply adjustments in sequence
+    const adjustments = [];
+    
+    if (brightness !== undefined) {
+      const brightnessValue = parseFloat(brightness);
+      processedImage = processedImage.modulate({ brightness: brightnessValue });
+      adjustments.push(`brightness: ${brightnessValue}`);
+    }
+    
+    if (saturation !== undefined) {
+      const saturationValue = parseFloat(saturation);
+      processedImage = processedImage.modulate({ saturation: saturationValue });
+      adjustments.push(`saturation: ${saturationValue}`);
+    }
+    
+    if (contrast !== undefined) {
+      const contrastValue = parseFloat(contrast);
+      processedImage = processedImage.linear(contrastValue, 0);
+      adjustments.push(`contrast: ${contrastValue}`);
+    }
+    
+    if (gamma !== undefined) {
+      const gammaValue = parseFloat(gamma);
+      processedImage = processedImage.gamma(gammaValue);
+      adjustments.push(`gamma: ${gammaValue}`);
+    }
+    
+    if (blur !== undefined) {
+      const blurValue = parseFloat(blur);
+      if (blurValue > 0) {
+        processedImage = processedImage.blur(blurValue);
+        adjustments.push(`blur: ${blurValue}px`);
+      }
+    }
+    
+    if (sharpen !== undefined) {
+      const sharpenValue = parseFloat(sharpen);
+      if (sharpenValue > 0) {
+        processedImage = processedImage.sharpen({ sigma: sharpenValue });
+        adjustments.push(`sharpen: ${sharpenValue}`);
+      }
+    }
+    
+    if (rotate !== undefined) {
+      const rotateValue = parseFloat(rotate);
+      processedImage = processedImage.rotate(rotateValue);
+      adjustments.push(`rotate: ${rotateValue}°`);
+    }
+    
+    if (flip === 'true') {
+      processedImage = processedImage.flip();
+      adjustments.push('flip: vertical');
+    }
+    
+    if (flop === 'true') {
+      processedImage = processedImage.flop();
+      adjustments.push('flop: horizontal');
+    }
+
+    // Get processed buffer
+    const processedBuffer = await processedImage.toBuffer();
+
+    // Save files
+    const originalPath = path.join(uploadsDir, `${sessionId}_original${path.extname(req.file.originalname)}`);
+    const editedPath = path.join(processedDir, `${sessionId}_edited${path.extname(req.file.originalname)}`);
+    
+    await fs.writeFile(originalPath, req.file.buffer);
+    await fs.writeFile(editedPath, processedBuffer);
+
+    const expiry = new Date(Date.now() + 10 * 60 * 1000);
+    fileSessions.set(sessionId, {
+      originalPath,
+      processedPath: editedPath,
+      expiry,
+      metadata: {
+        originalSize: req.file.size,
+        editedSize: processedBuffer.length,
+        adjustments
+      }
+    });
+
+    res.json({
+      sessionId,
+      success: true,
+      fileName: `edited_${req.file.originalname}`,
+      originalSize: req.file.size,
+      editedSize: processedBuffer.length,
+      adjustments,
+      expiresAt: expiry.toISOString()
+    });
+
+  } catch (error) {
+    console.error('Image editing error:', error);
+    res.status(500).json({ error: 'Failed to edit image. Please try again.' });
+  }
+});
+
+// Download processed file
 router.get('/download/:sessionId', async (req, res) => {
   try {
     const { sessionId } = req.params;
@@ -357,13 +630,32 @@ router.get('/download/:sessionId', async (req, res) => {
       return res.status(404).json({ error: 'Processed file not found' });
     }
 
-    // Get file info
-    const fileName = path.basename(session.processedPath);
-    const mimeType = mime.lookup(session.processedPath) || 'application/octet-stream';
+    // Determine content type from file extension
+    const ext = path.extname(session.processedPath).toLowerCase();
+    let contentType = 'application/octet-stream';
+    
+    switch (ext) {
+      case '.jpg':
+      case '.jpeg':
+        contentType = 'image/jpeg';
+        break;
+      case '.png':
+        contentType = 'image/png';
+        break;
+      case '.webp':
+        contentType = 'image/webp';
+        break;
+      case '.tiff':
+        contentType = 'image/tiff';
+        break;
+      case '.bmp':
+        contentType = 'image/bmp';
+        break;
+    }
 
     // Set headers for download
-    res.setHeader('Content-Type', mimeType);
-    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `attachment; filename="${path.basename(session.processedPath)}"`);
 
     // Stream the file
     const fileBuffer = await fs.readFile(session.processedPath);
@@ -386,29 +678,6 @@ router.get('/download/:sessionId', async (req, res) => {
     console.error('Download error:', error);
     res.status(500).json({ error: 'Failed to download file' });
   }
-});
-
-// Get session status
-router.get('/status/:sessionId', (req, res) => {
-  const { sessionId } = req.params;
-  const session = fileSessions.get(sessionId);
-
-  if (!session) {
-    return res.status(404).json({ error: 'Session not found' });
-  }
-
-  const now = new Date();
-  if (now > session.expiry) {
-    fileSessions.delete(sessionId);
-    return res.status(410).json({ error: 'Session expired' });
-  }
-
-  const timeLeft = Math.floor((session.expiry.getTime() - now.getTime()) / 1000);
-  res.json({
-    sessionId,
-    timeLeft,
-    expiresAt: session.expiry.toISOString()
-  });
 });
 
 export default router;

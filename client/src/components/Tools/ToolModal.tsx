@@ -13,6 +13,14 @@ import CompressImageTool from '../ImageTools/CompressImageTool';
 import ConvertImageTool from '../ImageTools/ConvertImageTool';
 import { TextToPDFTool } from './TextTools/TextToPDFTool';
 import { ProtectPDFTool } from './PDFTools/ProtectPDFTool';
+import { GrammarCheckerTool } from './AITools/GrammarCheckerTool';
+import { TextSummarizerTool } from './AITools/TextSummarizerTool';
+import { SmartFlashcardsTool } from './AITools/SmartFlashcardsTool';
+import { StudyPlannerTool } from './AITools/StudyPlannerTool';
+import { FormulaSolverTool } from './AITools/FormulaSolverTool';
+import { ScreenshotOCRTool } from './AITools/ScreenshotOCRTool';
+import { QuickNotepadTool } from './TextTools/QuickNotepadTool';
+import { FileConverterTool } from './FileTools/FileConverterTool';
 
 interface ToolModalProps {
   isOpen: boolean;
@@ -46,6 +54,22 @@ export const ToolModal: React.FC<ToolModalProps> = ({ isOpen, onClose, toolId, t
         return <ConvertImageTool />;
       case 'text-to-pdf':
         return <TextToPDFTool />;
+      case 'grammar-checker':
+        return <GrammarCheckerTool />;
+      case 'text-summary':
+        return <TextSummarizerTool />;
+      case 'smart-flashcards':
+        return <SmartFlashcardsTool />;
+      case 'ai-study-planner':
+        return <StudyPlannerTool />;
+      case 'formula-solver':
+        return <FormulaSolverTool />;
+      case 'screenshot-ocr':
+        return <ScreenshotOCRTool />;
+      case 'quick-notepad':
+        return <QuickNotepadTool />;
+      case 'file-converter':
+        return <FileConverterTool />;
       default:
         return (
           <div className="text-center py-12">
