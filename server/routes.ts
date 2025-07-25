@@ -74,7 +74,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Save PDF temporarily
           const tempPdfPath = path.join('/tmp', `pdf_${downloadId}.pdf`);
-          await fs.promises.writeFile(tempPdfPath, req.file.buffer);
+          await fs.promises.writeFile(tempPdfPath, req.file!.buffer);
           
           console.log(`PDF saved to: ${tempPdfPath}`);
           
