@@ -1,42 +1,27 @@
-import { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Points, PointMaterial } from '@react-three/drei';
-import * as THREE from 'three';
+import { useRef, useEffect } from 'react';
 
-// Generate random sphere positions for particles
-const generateSphere = (count: number, radius: number) => {
-  const positions = new Float32Array(count * 3);
-  
-  for (let i = 0; i < count; i++) {
-    const i3 = i * 3;
-    
-    // Generate random point on sphere surface
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
-    
-    const x = radius * Math.sin(phi) * Math.cos(theta);
-    const y = radius * Math.sin(phi) * Math.sin(theta);
-    const z = radius * Math.cos(phi);
-    
-    positions[i3] = x;
-    positions[i3 + 1] = y;
-    positions[i3 + 2] = z;
-  }
-  
-  return positions;
-};
+// Simplified CSS-based background animation
+export const AmbientBackground = () => {
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-purple-900/10 to-pink-900/20" />
+      <div className="absolute inset-0">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-white/30 rounded-full animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 3}s`
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
 
-const ParticleField = () => {
-  const pointsRef = useRef<THREE.Points>(null);
-  const positions = generateSphere(2000, 50);
-
-  useFrame((state) => {
-    if (pointsRef.current) {
-      // Slow rotation around Y axis
-      pointsRef.current.rotation.y = state.clock.elapsedTime * 0.05;
-      
-      // Subtle movement based on time
-      const time = state.clock.elapsedTime;
       pointsRef.current.position.y = Math.sin(time * 0.5) * 2;
     }
   });

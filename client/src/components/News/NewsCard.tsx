@@ -1,13 +1,11 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Plane, useTexture } from '@react-three/drei';
-import Tilt from 'react-parallax-tilt';
-import { Link } from 'react-router-dom';
+// Removed React Three Fiber and drei imports
+import { Link } from 'wouter';
 import { Clock, Eye, Heart, Share2, Tag } from 'lucide-react';
 import { NewsArticle, formatDate, getCategoryColor } from '@/lib/newsData';
 import { Badge } from '@/components/ui/badge';
-import * as THREE from 'three';
+// Removed Three.js import
 
 // GLSL Shaders for image effects
 const fragmentShader = `

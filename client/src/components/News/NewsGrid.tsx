@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+// Removed React Three Fiber imports for compatibility
 import { Search, Filter, TrendingUp, Clock, Sparkles, RefreshCw, Grid3X3, List } from 'lucide-react';
-import { NewsCard3D } from './NewsCard3D';
-import { NewsHero3D } from './NewsHero3D';
+// Simplified news components without 3D dependencies
 import { EnhancedSearchBar } from './EnhancedSearchBar';
 import { CategoryFilter } from './CategoryFilter';
-import { AmbientBackground } from './AmbientBackground';
 import { TrendingSidebar } from './TrendingSidebar';
 import { NewsNavbar } from './NewsNavbar';
 import { newsAPI, NewsArticle, getCategories } from '@/lib/newsData';
@@ -14,34 +12,25 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import * as THREE from 'three';
+// Removed Three.js import for compatibility
 
-// 3D Camera controller for parallax effect
-const CameraController = () => {
-  const { camera } = useThree();
-  const mousePosition = useRef({ x: 0, y: 0 });
+// Simplified parallax effect without React Three Fiber
+const useMouseParallax = () => {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
-      mousePosition.current = {
+      setMousePosition({
         x: (event.clientX / window.innerWidth) * 2 - 1,
         y: -(event.clientY / window.innerHeight) * 2 + 1
-      };
+      });
     };
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  useFrame(() => {
-    // Subtle camera movement based on mouse position
-    const targetX = mousePosition.current.x * 2;
-    const targetY = mousePosition.current.y * 1;
-    
-    camera.position.x += (targetX - camera.position.x) * 0.05;
-    camera.position.y += (targetY - camera.position.y) * 0.05;
-    camera.lookAt(0, 0, 0);
-  });
+  return mousePosition;
 
   return null;
 };
