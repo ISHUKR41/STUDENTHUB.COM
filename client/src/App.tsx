@@ -12,7 +12,8 @@ const Index = lazy(() => import("./pages/Index"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Tools = lazy(() => import("./pages/Tools"));
-const News = lazy(() => import("./pages/News"));
+const NewsPage = lazy(() => import("./pages/NewsPage"));
+const NewsDetail = lazy(() => import("./pages/NewsDetail"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const App = () => (
@@ -27,7 +28,8 @@ const App = () => (
             <Route path="/about" component={About} />
             <Route path="/contact" component={Contact} />
             <Route path="/tools" component={Tools} />
-            <Route path="/news" component={News} />
+            <Route path="/news" component={NewsPage} />
+            <Route path="/news/:id" component={NewsDetail} />
             <Route component={NotFound} />
           </Switch>
         </Suspense>
