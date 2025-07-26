@@ -55,9 +55,15 @@ const NewsPage: React.FC = () => {
       const params = new URLSearchParams({
         page: pageNum.toString(),
         limit: '24', // Increased for better grid
-        ...(selectedCategory !== 'All' && { category: selectedCategory }),
-        ...(searchQuery && { search: searchQuery })
       });
+      
+      if (selectedCategory !== 'All') {
+        params.append('category', selectedCategory);
+      }
+      
+      if (searchQuery && searchQuery.trim()) {
+        params.append('search', searchQuery.trim());
+      }
 
       const response = await fetch(`/api/news?${params}`);
       if (!response.ok) throw new Error('Failed to fetch news');
@@ -96,6 +102,7 @@ const NewsPage: React.FC = () => {
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setPage(1);
+    fetchNews(1, false); // Immediately fetch with new search query
   };
 
   const handleCategoryChange = (category: string) => {

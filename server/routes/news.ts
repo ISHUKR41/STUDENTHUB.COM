@@ -29,7 +29,7 @@ export async function getNews(req: Request, res: Response) {
     
     if (search) {
       whereConditions.push(
-        like(newsArticles.title, `%${search}%`)
+        sql`(${newsArticles.title} ILIKE ${`%${search}%`} OR ${newsArticles.summary} ILIKE ${`%${search}%`} OR ${newsArticles.fullContent} ILIKE ${`%${search}%`} OR ${newsArticles.author} ILIKE ${`%${search}%`})`
       );
     }
     
