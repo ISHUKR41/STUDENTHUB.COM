@@ -1,0 +1,296 @@
+Create a modern, highly animated, 3D-enabled news section for a student-focused website with dark theme. The news section should handle daily uploads of 50 news articles with expandable detailed views, using cutting-edge web technologies for maximum visual appeal and user engagement.
+
+FRONTEND REQUIREMENTS
+Core Technologies Stack
+Framework: Next.js 14+ with React 18+ (for SSR/SSG optimization and performance)
+
+Styling: TailwindCSS with custom dark theme configuration
+
+3D Graphics: Three.js for 3D elements and animations
+
+Animations:
+
+GSAP (GreenSock) for complex timeline animations and scroll-triggered effects
+
+Framer Motion for React component animations
+
+Lottie animations for micro-interactions
+
+**UI with dark theme customizations
+
+Design Specifications
+Theme: Dark mode with colors based on Material Design dark theme principles
+
+Primary background: #121212 (dark gray, not pure black)
+
+Surface colors: #1E1E1E to #2D2D2D gradient
+
+Accent colors: Electric blue (#00D4FF), neon green (#39FF14), and purple (#9C27B0)
+
+Text: #FFFFFF with appropriate contrast ratios (4.5:1 minimum)
+
+Typography: Modern sans-serif fonts (Inter, Roboto, or custom Google Fonts)
+
+Layout: CSS Grid and Flexbox for responsive design
+
+News Section Features
+3D News Cards:
+
+Each news card should have 3D hover effects using Three.js
+
+Implement card flip animations revealing more details on hover
+
+Add subtle 3D depth with shadows and perspective transforms
+
+Include floating particle effects around cards
+
+Advanced Animations:
+
+GSAP ScrollTrigger for news cards appearing with stagger animations
+
+Morphing text effects for headlines
+
+Parallax scrolling backgrounds
+
+Loading animations with skeleton screens
+
+Smooth page transitions between news sections
+
+Interactive Elements:
+
+Animated search bar with auto-suggestions
+
+Category filters with smooth transitions
+
+Infinite scroll with lazy loading
+
+"Read More" expansion with smooth height animations
+
+Share buttons with bounce effects
+
+Modern UI Patterns:
+
+Glassmorphism effects on cards
+
+Neumorphism elements for buttons
+
+Gradient overlays on images
+
+Animated icons and micro-interactions
+
+Progress indicators for reading time
+
+Layout Structure```
+Header Section:
+
+Animated logo with 3D rotation
+
+Category navigation with hover effects
+
+Search bar with expanding animation
+
+Hero Section:
+
+Featured news with large 3D card
+
+Auto-rotating carousel with 3D perspective
+
+Breaking news ticker with smooth scrolling
+
+Main Grid:
+
+Masonry layout for news cards
+
+Different card sizes (small, medium, large)
+
+Each card with 3D hover transformations
+
+Sidebar:
+
+Trending topics with animated counters
+
+Latest updates with slide-in effects
+
+Newsletter signup with form animations
+
+text
+
+### **BACKEND REQUIREMENTS**
+
+#### **Technology Stack**
+- **Runtime**: Node.js 18+ with Express.js
+- **Database**: MongoDB with Mongoose ODM for flexible news data schema
+- **Authentication**: JWT tokens for admin access
+- **File Handling**: Multer for PDF uploads and image processing
+- **Caching**: Redis for performance optimization
+- **API Architecture**: RESTful APIs with proper error handling
+
+#### **Database Schema**
+```javascript
+NewsArticle Schema:
+{
+  _id: ObjectId,
+  title: String (required, max: 200),
+  subtitle: String (max: 300),
+  summary: String (required, max: 500),
+  fullContent: String (required),
+  category: String (enum: ['Academic', 'Exam', 'Scholarship', 'Career', 'Technology', 'Sports', 'General']),
+  tags: [String],
+  author: String,
+  publishDate: Date,
+  readTime: Number,
+  featured: Boolean,
+  priority: Number (1-5 for sorting),
+  images: [{
+    url: String,
+    alt: String,
+    caption: String
+  }],
+  pdfFile: String (file path),
+  sourceLink: String,
+  views: Number,
+  likes: Number,
+  shares: Number,
+  status: String (enum: ['draft', 'published', 'archived']),
+  createdAt: Date,
+  updatedAt: Date
+}
+API Endpoints
+text
+GET /api/news - Get paginated news (with filters)
+GET /api/news/:id - Get single news article
+POST /api/news - Create new news article (admin)
+PUT /api/news/:id - Update news article (admin)
+DELETE /api/news/:id - Delete news article (admin)
+GET /api/news/category/:category - Get news by category
+GET /api/news/search?q=query - Search news
+GET /api/news/trending - Get trending news
+POST /api/news/:id/view - Increment view count
+POST /api/news/bulk-upload - Bulk upload from PDF
+ADVANCED FEATURES
+Performance Optimizations
+Implement Next.js Image component for optimized image loading
+
+Use dynamic imports for code splitting
+
+Implement service worker for offline reading
+
+Add compression middleware
+
+Implement CDN integration for static assets
+
+SEO & Accessibility
+Server-side rendering for SEO
+
+Proper meta tags and structured data
+
+Alt text for all images
+
+Keyboard navigation support
+
+Screen reader compatibility
+
+High contrast mode support
+
+Mobile-First Design
+Responsive breakpoints: 320px, 768px, 1024px, 1440px
+
+Touch-friendly interactions
+
+Swipe gestures for card navigation
+
+Mobile-optimized animations (reduced motion for performance)
+
+IMPLEMENTATION LIBRARIES
+Essential NPM Packages
+json
+{
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "tailwindcss": "^3.4.0",
+    "three": "^0.160.0",
+    "@react-three/fiber": "^8.15.0",
+    "@react-three/drei": "^9.88.0",
+    "gsap": "^3.12.0",
+    "framer-motion": "^10.16.0",
+    "lottie-react": "^2.4.0",
+    "mongoose": "^8.0.0",
+    "express": "^4.18.0",
+    "multer": "^1.4.5",
+    "redis": "^4.6.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.3",
+    "helmet": "^7.1.0",
+    "cors": "^2.8.5",
+    "compression": "^1.7.4",
+    "express-rate-limit": "^7.1.0"
+  }
+}
+FILE STRUCTURE
+text
+project/
+├── components/
+│   ├── NewsCard.jsx (3D animated card component)
+│   ├── NewsGrid.jsx (masonry grid layout)
+│   ├── NewsHero.jsx (featured news section)
+│   ├── SearchBar.jsx (animated search)
+│   ├── CategoryFilter.jsx (filter tabs)
+│   └── animations/ (GSAP animation utilities)
+├── pages/
+│   ├── index.js (main news page)
+│   ├── news/[id].js (individual news page)
+│   └── api/ (backend API routes)
+├── styles/
+│   ├── globals.css (Tailwind + custom CSS)
+│   └── animations.css (custom animation classes)
+├── lib/
+│   ├── database.js (MongoDB connection)
+│   ├── auth.js (JWT utilities)
+│   └── animations.js (GSAP timeline configs)
+└── public/
+    ├── models/ (3D models for Three.js)
+    └── animations/ (Lottie JSON files)
+```### **SPECIFIC ANIMATION REQUESTS**
+
+#### **Card Animations**
+- Cards should float slightly with subtle rotation on hover
+- Implement card stacking effect when multiple cards are selected
+- Add ripple effects on click
+- Scale animations when cards are focused
+
+#### **Text Animations**
+- Headlines should have typewriter effects for important news
+- Implement text reveal animations on scroll
+- Add glitch effects for breaking news
+- Morphing text for category transitions
+
+#### **Background Effects**
+- Animated gradient backgrounds that shift based on news category
+- Particle systems that react to mouse movement
+- Subtle geometric patterns that animate in the background
+- Day/night cycle effect based on time
+
+### **DAILY WORKFLOW INTEGRATION**
+1. **PDF Upload System**: Create interface for uploading daily PDF with 50 news items
+2. **Auto-parsing**: Implement PDF text extraction and auto-categorization
+3. **Bulk Insert**: API endpoint for adding all 50 news at once
+4. **Auto-publishing**: Schedule system for publishing at specific times
+5. **Analytics Dashboard**: Track views, engagement, and popular topics
+
+### **ACCESSIBILITY & PERFORMANCE**
+- Implement prefers-reduced-motion for users who prefer less animation
+- Ensure all interactive elements are keyboard accessible
+- Add loading states for all async operations
+- Implement error boundaries for robust error handling
+- Use React.memo and useMemo for performance optimization
+
+### **MODERN WEB FEATURES**
+- Progressive Web App (PWA) capabilities
+- Push notifications for breaking news
+- Offline reading functionality
+- Dark/light mode toggle (though default is dark)
+- Share API integration for social sharing
+
+This comprehensive prompt should give Replit AI all the context needed to create a modern, highly animated, 3D-enabled news section that will make your student website stand out with cutting-edge design and functionality. The focus on dark theme, smooth animations, and 3D effects will create an engaging experience that keeps students coming back to read the daily news.

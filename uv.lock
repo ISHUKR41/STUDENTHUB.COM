@@ -726,6 +726,7 @@ dependencies = [
     { name = "python-docx" },
     { name = "python-multipart" },
     { name = "python-pptx" },
+    { name = "sqlalchemy" },
     { name = "werkzeug" },
 ]
 
@@ -746,6 +747,7 @@ requires-dist = [
     { name = "python-docx", specifier = ">=1.2.0" },
     { name = "python-multipart", specifier = ">=0.0.20" },
     { name = "python-pptx", specifier = ">=1.0.2" },
+    { name = "sqlalchemy", specifier = ">=2.0.41" },
     { name = "werkzeug", specifier = ">=3.1.3" },
 ]
 
