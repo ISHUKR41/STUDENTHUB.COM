@@ -14,6 +14,7 @@ import imageToolsRouter from "./routes/imageTools";
 import pdfToolsRouter from "./routes/pdfTools";
 import aiToolsRouter from "./routes/aiTools";
 import fileToolsRouter from "./routes/fileTools";
+import { registerNewsRoutes } from "./routes/newsRoutes";
 import multer from "multer";
 import { pythonBridge } from "./python_bridge";
 
@@ -31,6 +32,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/pdf-tools", pdfToolsRouter);
   app.use("/api/ai-tools", aiToolsRouter);
   app.use("/api/file-tools", fileToolsRouter);
+  
+  // Register news routes
+  registerNewsRoutes(app);
 
   // PDF to Word converter routes - real backend processing
   app.post("/api/pdf-converter/upload", upload.single('file'), async (req, res) => {
