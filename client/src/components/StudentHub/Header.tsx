@@ -19,7 +19,7 @@ export const Header: React.FC = () => {
   const menuItems = [
     { label: 'Home', href: '/' },
     { label: 'PYQs', href: '/#pyqs' },
-    { label: 'News', href: '/news' },
+    { label: 'News', href: '/#news' },
     { label: 'Tools', href: '/tools' },
     { label: 'Test', href: '/#test' },
     { label: 'Books', href: '/#books' },
