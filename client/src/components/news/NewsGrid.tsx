@@ -137,12 +137,22 @@ export const NewsGrid: React.FC<NewsGridProps> = ({ className = '' }) => {
   };
 
   const getMasonryClass = (index: number) => {
+    // Dynamic layout based on article priority and features
     const patterns = [
-      'col-span-2 row-span-2', // Large
+      'col-span-2 row-span-2', // Large - for featured articles
+      'col-span-1 row-span-1', // Small - for regular news
+      'col-span-1 row-span-2', // Tall - for detailed stories
+      'col-span-2 row-span-1', // Wide - for breaking news
       'col-span-1 row-span-1', // Small
-      'col-span-1 row-span-2', // Tall
       'col-span-2 row-span-1', // Wide
     ];
+    
+    // Prioritize featured articles for larger cards
+    const article = articles[index];
+    if (article?.featured && index < 3) {
+      return 'col-span-2 row-span-2';
+    }
+    
     return patterns[index % patterns.length];
   };
 

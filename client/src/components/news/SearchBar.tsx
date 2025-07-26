@@ -8,12 +8,14 @@ interface SearchBarProps {
 }
 
 const trendingSearches = [
-  'Scholarship 2025',
-  'JEE Main Updates',
-  'NEET Results',
-  'Engineering Jobs',
-  'Study Abroad',
-  'Campus Placements'
+  'UPSC Civil Services 2025',
+  'NEET Results 2025',
+  'IIM MBA Admissions',
+  'Engineering Placements',
+  'Delhi University B.Tech',
+  'Chemistry Olympiad',
+  'Digital Education Budget',
+  'Campus Recruitment 2025'
 ];
 
 export const SearchBar: React.FC<SearchBarProps> = ({ 
