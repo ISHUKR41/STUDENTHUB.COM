@@ -1,19 +1,19 @@
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Router, Route, Switch } from "wouter";
-import { queryClient } from "@/lib/queryClient";
-import { Suspense, lazy } from "react";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import Index from "./pages/Index";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Tools from "./pages/Tools";
+import News from "./pages/News";
+import NewsDetail from "./pages/NewsDetail";
+import AdminNews from "./pages/AdminNews";
+import NotFound from "./pages/NotFound";
 
-// Lazy load components for better performance
-const Index = lazy(() => import("./pages/Index"));
-const About = lazy(() => import("./pages/About"));
-const Contact = lazy(() => import("./pages/Contact"));
-const Tools = lazy(() => import("./pages/Tools"));
-const News = lazy(() => import("./pages/News"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -21,16 +21,16 @@ const App = () => (
       <Toaster />
       <Sonner />
       <Router>
-        <Suspense fallback={<LoadingSpinner />}>
-          <Switch>
-            <Route path="/" component={Index} />
-            <Route path="/about" component={About} />
-            <Route path="/contact" component={Contact} />
-            <Route path="/tools" component={Tools} />
-            <Route path="/news" component={News} />
-            <Route component={NotFound} />
-          </Switch>
-        </Suspense>
+        <Switch>
+          <Route path="/" component={Index} />
+          <Route path="/about" component={About} />
+          <Route path="/contact" component={Contact} />
+          <Route path="/tools" component={Tools} />
+          <Route path="/news" component={News} />
+          <Route path="/news/:slug" component={NewsDetail} />
+          <Route path="/admin/news" component={AdminNews} />
+          <Route component={NotFound} />
+        </Switch>
       </Router>
     </TooltipProvider>
   </QueryClientProvider>

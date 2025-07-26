@@ -5,23 +5,12 @@ import { X } from 'lucide-react';
 import { MergePDFTool } from './PDFTools/MergePDFTool';
 import { SplitPDFTool } from './PDFTools/SplitPDFTool';
 import { CompressPDFTool } from './PDFTools/CompressPDFTool';
-import { PDFConverter } from './PDFConverter';
+import { PDFToWordTool } from './PDFTools/PDFToWordTool';
 import { PDFToPowerPointTool } from './PDFTools/PDFToPowerPointTool';
-import { WordToPDFTool } from './PDFTools/WordToPDFTool';
 import { ResizeImageTool } from './ImageTools/ResizeImageTool';
-import CropImageTool from '../ImageTools/CropImageTool';
-import CompressImageTool from '../ImageTools/CompressImageTool';
-import ConvertImageTool from '../ImageTools/ConvertImageTool';
+import { CompressImageTool } from './ImageTools/CompressImageTool';
 import { TextToPDFTool } from './TextTools/TextToPDFTool';
 import { ProtectPDFTool } from './PDFTools/ProtectPDFTool';
-import { GrammarCheckerTool } from './AITools/GrammarCheckerTool';
-import { TextSummarizerTool } from './AITools/TextSummarizerTool';
-import { SmartFlashcardsTool } from './AITools/SmartFlashcardsTool';
-import { StudyPlannerTool } from './AITools/StudyPlannerTool';
-import { FormulaSolverTool } from './AITools/FormulaSolverTool';
-import { ScreenshotOCRTool } from './AITools/ScreenshotOCRTool';
-import { QuickNotepadTool } from './TextTools/QuickNotepadTool';
-import { FileConverterTool } from './FileTools/FileConverterTool';
 
 interface ToolModalProps {
   isOpen: boolean;
@@ -42,37 +31,15 @@ export const ToolModal: React.FC<ToolModalProps> = ({ isOpen, onClose, toolId, t
       case 'protect-pdf':
         return <ProtectPDFTool />;
       case 'pdf-to-word':
-        return <PDFConverter />;
+        return <PDFToWordTool />;
       case 'pdf-to-powerpoint':
         return <PDFToPowerPointTool />;
-      case 'word-to-pdf':
-        return <WordToPDFTool />;
       case 'resize-image':
         return <ResizeImageTool />;
-      case 'crop-image':
-        return <CropImageTool />;
       case 'compress-image':
         return <CompressImageTool />;
-      case 'convert-image':
-        return <ConvertImageTool />;
       case 'text-to-pdf':
         return <TextToPDFTool />;
-      case 'grammar-checker':
-        return <GrammarCheckerTool />;
-      case 'text-summary':
-        return <TextSummarizerTool />;
-      case 'smart-flashcards':
-        return <SmartFlashcardsTool />;
-      case 'ai-study-planner':
-        return <StudyPlannerTool />;
-      case 'formula-solver':
-        return <FormulaSolverTool />;
-      case 'screenshot-ocr':
-        return <ScreenshotOCRTool />;
-      case 'quick-notepad':
-        return <QuickNotepadTool />;
-      case 'file-converter':
-        return <FileConverterTool />;
       default:
         return (
           <div className="text-center py-12">
