@@ -12,6 +12,7 @@ const Index = lazy(() => import("./pages/Index"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Tools = lazy(() => import("./pages/Tools"));
+const News = lazy(() => import("./pages/News"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const App = () => (
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/about" component={About} />
             <Route path="/contact" component={Contact} />
             <Route path="/tools" component={Tools} />
+            <Route path="/news" component={News} />
             <Route component={NotFound} />
           </Switch>
         </Suspense>

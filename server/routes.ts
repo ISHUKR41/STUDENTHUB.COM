@@ -14,6 +14,7 @@ import imageToolsRouter from "./routes/imageTools";
 import pdfToolsRouter from "./routes/pdfTools";
 import aiToolsRouter from "./routes/aiTools";
 import fileToolsRouter from "./routes/fileTools";
+import * as newsRoutes from "./routes/news";
 import multer from "multer";
 import { pythonBridge } from "./python_bridge";
 
@@ -31,6 +32,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/pdf-tools", pdfToolsRouter);
   app.use("/api/ai-tools", aiToolsRouter);
   app.use("/api/file-tools", fileToolsRouter);
+
+  // News API routes
+  app.get("/api/news", newsRoutes.getNews);
+  app.get("/api/news/trending", newsRoutes.getTrendingNews);
+  app.get("/api/news/category/:category", newsRoutes.getNewsByCategory);
+  app.get("/api/news/:id", newsRoutes.getNewsById);
+  app.post("/api/news", newsRoutes.createNews);
+  app.put("/api/news/:id", newsRoutes.updateNews);
+  app.delete("/api/news/:id", newsRoutes.deleteNews);
+  app.post("/api/news/:id/view", newsRoutes.incrementViews);
+  app.post("/api/news/bulk-upload", newsRoutes.bulkCreateNews);
 
   // PDF to Word converter routes - real backend processing
   app.post("/api/pdf-converter/upload", upload.single('file'), async (req, res) => {
