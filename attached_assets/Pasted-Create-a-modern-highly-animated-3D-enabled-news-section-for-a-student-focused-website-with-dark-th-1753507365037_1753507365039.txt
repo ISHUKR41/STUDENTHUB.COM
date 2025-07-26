@@ -1,0 +1,896 @@
+Create a modern, highly animated, 3D-enabled news section for a student-focused website with dark theme. The news section should handle daily uploads of 50 news articles with expandable detailed views, using cutting-edge web technologies for maximum visual appeal and user engagement.
+
+FRONTEND REQUIREMENTS
+Core Technologies Stack
+Framework: Next.js 14+ with React 18+ (for SSR/SSG optimization and performance)
+
+Styling: TailwindCSS with custom dark theme configuration
+
+3D Graphics: Three.js for 3D elements and animations
+
+Animations:
+
+GSAP (GreenSock) for complex timeline animations and scroll-triggered effects
+
+Framer Motion for React component animations
+
+Lottie animations for micro-interactions
+
+**UI with dark theme customizations
+
+Design Specifications
+Theme: Dark mode with colors based on Material Design dark theme principles
+
+Primary background: #121212 (dark gray, not pure black)
+
+Surface colors: #1E1E1E to #2D2D2D gradient
+
+Accent colors: Electric blue (#00D4FF), neon green (#39FF14), and purple (#9C27B0)
+
+Text: #FFFFFF with appropriate contrast ratios (4.5:1 minimum)
+
+Typography: Modern sans-serif fonts (Inter, Roboto, or custom Google Fonts)
+
+Layout: CSS Grid and Flexbox for responsive design
+
+News Section Features
+3D News Cards:
+
+Each news card should have 3D hover effects using Three.js
+
+Implement card flip animations revealing more details on hover
+
+Add subtle 3D depth with shadows and perspective transforms
+
+Include floating particle effects around cards
+
+Advanced Animations:
+
+GSAP ScrollTrigger for news cards appearing with stagger animations
+
+Morphing text effects for headlines
+
+Parallax scrolling backgrounds
+
+Loading animations with skeleton screens
+
+Smooth page transitions between news sections
+
+Interactive Elements:
+
+Animated search bar with auto-suggestions
+
+Category filters with smooth transitions
+
+Infinite scroll with lazy loading
+
+"Read More" expansion with smooth height animations
+
+Share buttons with bounce effects
+
+Modern UI Patterns:
+
+Glassmorphism effects on cards
+
+Neumorphism elements for buttons
+
+Gradient overlays on images
+
+Animated icons and micro-interactions
+
+Progress indicators for reading time
+
+Layout Structure```
+Header Section:
+
+Animated logo with 3D rotation
+
+Category navigation with hover effects
+
+Search bar with expanding animation
+
+Hero Section:
+
+Featured news with large 3D card
+
+Auto-rotating carousel with 3D perspective
+
+Breaking news ticker with smooth scrolling
+
+Main Grid:
+
+Masonry layout for news cards
+
+Different card sizes (small, medium, large)
+
+Each card with 3D hover transformations
+
+Sidebar:
+
+Trending topics with animated counters
+
+Latest updates with slide-in effects
+
+Newsletter signup with form animations
+
+text
+
+### **BACKEND REQUIREMENTS**
+
+#### **Technology Stack**
+- **Runtime**: Node.js 18+ with Express.js
+- **Database**: MongoDB with Mongoose ODM for flexible news data schema
+- **Authentication**: JWT tokens for admin access
+- **File Handling**: Multer for PDF uploads and image processing
+- **Caching**: Redis for performance optimization
+- **API Architecture**: RESTful APIs with proper error handling
+
+#### **Database Schema**
+```javascript
+NewsArticle Schema:
+{
+  _id: ObjectId,
+  title: String (required, max: 200),
+  subtitle: String (max: 300),
+  summary: String (required, max: 500),
+  fullContent: String (required),
+  category: String (enum: ['Academic', 'Exam', 'Scholarship', 'Career', 'Technology', 'Sports', 'General']),
+  tags: [String],
+  author: String,
+  publishDate: Date,
+  readTime: Number,
+  featured: Boolean,
+  priority: Number (1-5 for sorting),
+  images: [{
+    url: String,
+    alt: String,
+    caption: String
+  }],
+  pdfFile: String (file path),
+  sourceLink: String,
+  views: Number,
+  likes: Number,
+  shares: Number,
+  status: String (enum: ['draft', 'published', 'archived']),
+  createdAt: Date,
+  updatedAt: Date
+}
+API Endpoints
+text
+GET /api/news - Get paginated news (with filters)
+GET /api/news/:id - Get single news article
+POST /api/news - Create new news article (admin)
+PUT /api/news/:id - Update news article (admin)
+DELETE /api/news/:id - Delete news article (admin)
+GET /api/news/category/:category - Get news by category
+GET /api/news/search?q=query - Search news
+GET /api/news/trending - Get trending news
+POST /api/news/:id/view - Increment view count
+POST /api/news/bulk-upload - Bulk upload from PDF
+ADVANCED FEATURES
+Performance Optimizations
+Implement Next.js Image component for optimized image loading
+
+Use dynamic imports for code splitting
+
+Implement service worker for offline reading
+
+Add compression middleware
+
+Implement CDN integration for static assets
+
+SEO & Accessibility
+Server-side rendering for SEO
+
+Proper meta tags and structured data
+
+Alt text for all images
+
+Keyboard navigation support
+
+Screen reader compatibility
+
+High contrast mode support
+
+Mobile-First Design
+Responsive breakpoints: 320px, 768px, 1024px, 1440px
+
+Touch-friendly interactions
+
+Swipe gestures for card navigation
+
+Mobile-optimized animations (reduced motion for performance)
+
+IMPLEMENTATION LIBRARIES
+Essential NPM Packages
+json
+{
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "tailwindcss": "^3.4.0",
+    "three": "^0.160.0",
+    "@react-three/fiber": "^8.15.0",
+    "@react-three/drei": "^9.88.0",
+    "gsap": "^3.12.0",
+    "framer-motion": "^10.16.0",
+    "lottie-react": "^2.4.0",
+    "mongoose": "^8.0.0",
+    "express": "^4.18.0",
+    "multer": "^1.4.5",
+    "redis": "^4.6.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.3",
+    "helmet": "^7.1.0",
+    "cors": "^2.8.5",
+    "compression": "^1.7.4",
+    "express-rate-limit": "^7.1.0"
+  }
+}
+FILE STRUCTURE
+text
+project/
+├── components/
+│   ├── NewsCard.jsx (3D animated card component)
+│   ├── NewsGrid.jsx (masonry grid layout)
+│   ├── NewsHero.jsx (featured news section)
+│   ├── SearchBar.jsx (animated search)
+│   ├── CategoryFilter.jsx (filter tabs)
+│   └── animations/ (GSAP animation utilities)
+├── pages/
+│   ├── index.js (main news page)
+│   ├── news/[id].js (individual news page)
+│   └── api/ (backend API routes)
+├── styles/
+│   ├── globals.css (Tailwind + custom CSS)
+│   └── animations.css (custom animation classes)
+├── lib/
+│   ├── database.js (MongoDB connection)
+│   ├── auth.js (JWT utilities)
+│   └── animations.js (GSAP timeline configs)
+└── public/
+    ├── models/ (3D models for Three.js)
+    └── animations/ (Lottie JSON files)
+```### **SPECIFIC ANIMATION REQUESTS**
+
+#### **Card Animations**
+- Cards should float slightly with subtle rotation on hover
+- Implement card stacking effect when multiple cards are selected
+- Add ripple effects on click
+- Scale animations when cards are focused
+
+#### **Text Animations**
+- Headlines should have typewriter effects for important news
+- Implement text reveal animations on scroll
+- Add glitch effects for breaking news
+- Morphing text for category transitions
+
+#### **Background Effects**
+- Animated gradient backgrounds that shift based on news category
+- Particle systems that react to mouse movement
+- Subtle geometric patterns that animate in the background
+- Day/night cycle effect based on time
+
+### **DAILY WORKFLOW INTEGRATION**
+1. **PDF Upload System**: Create interface for uploading daily PDF with 50 news items
+2. **Auto-parsing**: Implement PDF text extraction and auto-categorization
+3. **Bulk Insert**: API endpoint for adding all 50 news at once
+4. **Auto-publishing**: Schedule system for publishing at specific times
+5. **Analytics Dashboard**: Track views, engagement, and popular topics
+
+### **ACCESSIBILITY & PERFORMANCE**
+- Implement prefers-reduced-motion for users who prefer less animation
+- Ensure all interactive elements are keyboard accessible
+- Add loading states for all async operations
+- Implement error boundaries for robust error handling
+- Use React.memo and useMemo for performance optimization
+
+### **MODERN WEB FEATURES**
+- Progressive Web App (PWA) capabilities
+- Push notifications for breaking news
+- Offline reading functionality
+- Dark/light mode toggle (though default is dark)
+- Share API integration for social sharing
+
+
+
+
+A Technical Blueprint for a Generative, 3D, and Interactive News Platform
+The Vision: A Blueprint for a Generative News Experience
+This section outlines the guiding philosophy for a next-generation news platform tailored to a student demographic. The objective is to move beyond a conventional, linear news feed and create an interactive, explorable "news landscape." This approach aims to establish the platform as a destination for news consumption, one that students actively prefer over competitors due to its unique blend of engagement, modern aesthetics, and high-quality user experience.
+
+Deconstructing "Greatness" in Digital News
+An analysis of premier digital news outlets reveals a consistent pattern: success is built on a foundation of credibility, readability, and a professional aesthetic. Publications like The New Yorker, Bloomberg, and The Next Web leverage clean layouts, exceptional typography, and generous use of whitespace to create an environment that feels authoritative and trustworthy. Their designs, while modern, prioritize the content, ensuring that the user's focus remains on the journalism. This contrasts with more visually aggressive, brand-centric platforms like    
+
+Red Bull's "The Red Bulletin" or Fast Company, which employ bold motion design and futuristic layouts to evoke a sense of action and innovation.   
+
+The proposed news section will draw inspiration from both ends of this spectrum. It will adopt the content-first principles and typographic discipline of established journalistic outlets while incorporating the engaging, interactive elements of modern, award-winning digital experiences. The key is that every design choice, particularly those involving animation and 3D, must serve a purpose beyond mere decoration. The most effective interactive journalism, such as the data visualizations from    
+
+The New York Times, uses interactivity to make complex information more digestible or a story more immersive. For a discerning student audience, gimmicks are quickly dismissed; therefore, the "wow" factor must be intrinsically linked to enhanced usability and deeper content engagement.   
+
+The Core Concept: The "Celestial News Grid"
+To manage a high volume of content—approximately 50 new items daily—without creating a cluttered or overwhelming interface, the central user interface will be a "Celestial News Grid." This concept is inspired by the effective "mosaic" or "jigsaw puzzle" layouts seen on sites like The Verge, which allow users to quickly scan multiple stories.   
+
+However, to fulfill the requirement for 3D elements in a meaningful way, this will not be a flat grid. Instead, it will be a 3D perspective space where news cards float at varying depths along the z-axis. This immediately establishes a sense of an explorable, dimensional landscape rather than a static page. This approach directly addresses the need for a "modern and engaging" platform and aligns with the trend of using unique, captivating layouts to stand out from the competition. The aesthetic will be tech-forward and futuristic, drawing from the "sci-fi" and "cutting-edge" designs of award-winning sites like BlueYard and DevArt.   
+
+User Experience Goal: From Passive Reading to Active Exploration
+The user experience will be fundamentally reoriented around discovery and interaction. The 3D layout of the Celestial News Grid will feature subtle parallax effects that respond to mouse movement, creating the sensation that the user is peering into and navigating through the information space. This transforms the user from a passive reader into an active explorer.
+
+Interactions will be designed to be both satisfying and purposeful. Hovering over a card will trigger a cascade of micro-interactions—a 3D tilt, a soft glare, and the smooth reveal of information—making the interface feel alive and responsive. This focus on a "mind-blowing user experience" and "superb interactive graphics" is a hallmark of top-tier digital products. The ultimate objective is to leverage this interactivity not as a superficial layer, but as a core tool for storytelling and engagement, mirroring the sophisticated techniques used in the most advanced interactive journalism pieces from globally recognized sources like    
+
+The Guardian and The New York Times.   
+
+Foundational Design System & Dark Mode Aesthetics
+To achieve a professional, modern, and visually stunning dark theme, a comprehensive design system must be established. This system will govern colors, typography, and spacing, ensuring consistency, accessibility, and aesthetic excellence across the entire platform. It translates the abstract goal of a "modern dark theme" into a concrete set of rules for implementation.
+
+The Science of a Superior Dark Theme
+A common mistake in dark mode design is the use of pure black (#000000) for backgrounds and pure white (#FFFFFF) for text. This combination creates excessive contrast, which can lead to eye strain and a "halating" effect where text appears to glow unpleasantly. To avoid this, the design will adhere to professional UI/UX best practices.   
+
+The primary surface color will be a dark grey, such as Google's Material Design recommendation of Cod Gray (#121212). This provides a softer, more sophisticated foundation that is easier on the eyes and makes other UI elements feel more grounded.   
+
+Furthermore, a critical aspect of dark mode design is communicating depth and hierarchy. In traditional light mode designs, shadows are used to create a sense of elevation (e.g., a modal appearing "on top" of a page). On dark surfaces, however, shadows are often ineffective or invisible. The solution is to use surface color to denote elevation. Elements that are higher in the visual hierarchy (like pop-up modals or navigation bars) will use progressively lighter shades of grey. This creates an intuitive sense of depth based on light, a principle that is both aesthetically pleasing and highly functional.   
+
+The Color Palette: Controlled and Purposeful
+The color palette will be minimalist and controlled to maintain a sophisticated and focused atmosphere. It will be defined using CSS variables for easy management and theming.
+
+Surface Colors: A stack of dark greys will be defined to represent different elevation levels. For example: #121212 for the base background, #1E1E1E for cards, and #2C2C2C for modals and dropdowns.
+
+Text Colors: Pure white will be avoided for body text. Instead, an off-white or light grey (e.g., oklch(0.985 0 0)) will be used to reduce glare. Brighter, near-white colors will be reserved for high-emphasis headlines to create a clear typographic hierarchy.   
+
+Accent Color: A single, vibrant accent color will be chosen to highlight interactive elements like links, buttons, and active states. To prevent visual "vibration" against the dark background, this color should be vivid but not overly saturated. A neon green or electric blue, as seen in modern portfolios, can be highly effective when used sparingly.   
+
+Typography: The Voice of the Brand
+Typography is a cornerstone of effective web design, establishing brand identity and ensuring readability. A clear and consistent typographic hierarchy will be implemented, with defined styles for headings (H1, H2, H3), body text, and captions. Each style will have a specific font size, weight, and letter spacing (tracking) to guide the user's eye through the content.   
+
+To create a professional and modern feel, a maximum of two typefaces will be used:
+
+A clean, highly readable sans-serif font (e.g., Inter, Satoshi) for all UI elements, body copy, and subheadings. This ensures clarity and functionality.
+
+A more characterful display font (either a distinct serif or a stylized sans-serif) for major headlines (H1). This creates visual contrast and imbues the site with a unique personality, a technique employed by many top-tier publications.   
+
+Implementation via Shadcn/ui and Tailwind CSS
+To ensure a professional, maintainable, and accessible implementation, the frontend will be built using Shadcn/ui on top of Tailwind CSS. Shadcn/ui is not a traditional component library but a collection of reusable, copy-and-paste components that provides an excellent foundation for building a custom design system.   
+
+The entire color palette and theming system will be implemented using CSS variables within the globals.css file, following the best practices outlined in the Shadcn/ui documentation. This approach centralizes all design tokens, making it trivial to manage the dark theme and any potential future themes. The implementation will involve installing and configuring the    
+
+ThemeProvider from the next-themes package and creating a mode-toggle component, ensuring a robust and user-controlled theming experience.   
+
+Element Type	CSS Variable	Dark Mode Value (OKLCH)	Description/Usage
+Background	--background	oklch(0.09 0.02 237)	Base page background (#121212)
+Foreground	--foreground	oklch(0.98 0.01 237)	Primary text color (off-white)
+Card	--card	oklch(0.12 0.02 237)	Background for cards (#1E1E1E)
+Card Foreground	--card-foreground	oklch(0.98 0.01 237)	Text color inside cards
+Primary	--primary	oklch(0.98 0.01 237)	Primary interactive elements (e.g., text)
+Primary Foreground	--primary-foreground	oklch(0.09 0.02 237)	Text color on primary elements
+Accent	--accent	oklch(0.7 0.25 150)	Vibrant accent for CTAs, links, highlights
+Accent Foreground	--accent-foreground	oklch(0.09 0.02 237)	Text color on accent backgrounds
+Muted	--muted	oklch(0.5 0.02 237)	Muted text for secondary info, bylines
+Border	--border	oklch(0.2 0.02 237)	Borders for inputs, dividers
+Radius	--radius	0.75rem	Default border radius for components
+Table 2.1: Dark Theme Design System Specification.			
+
+Export to Sheets
+The Core Technology Stack: Selecting Tools for a Modern, Animated Web
+The selection of the right technologies is paramount to achieving the project's ambitious goals for interactivity, 3D graphics, and performance. This section outlines the chosen technology stack, providing a clear rationale for each library and framework. The stack is designed to be modern, scalable, and perfectly suited to the specific requirements of the news platform.
+
+Framework & Styling
+Framework: Next.js (React)
+The foundation of the application will be Next.js. As a leading React framework, it provides critical features for a content-driven site, including server-side rendering (SSR) and static site generation (SSG) for excellent performance and SEO, file-based routing for intuitive development, and a vast, mature ecosystem of compatible libraries.
+
+Styling: Tailwind CSS
+Tailwind CSS will be used for all styling. Its utility-first approach is highly efficient for building custom designs within a component-based framework like React. It eliminates the need for writing custom CSS files for each component and integrates seamlessly with our chosen component foundation, Shadcn/ui.   
+
+The Primary Animation Library: Framer Motion
+Framer Motion is designated as the primary animation library for the project. It will be responsible for all UI animations, layout transitions, and gesture-based interactions.
+
+The rationale for this choice is clear: Framer Motion is built specifically for React and offers a declarative syntax that aligns perfectly with the React development paradigm. This makes it exceptionally easy to tie animations to component state. Its    
+
+AnimatePresence component is the industry-standard solution for animating components as they enter and exit the DOM, which is essential for creating the seamless page transitions required for this project. Furthermore, its excellent support for gestures like hover, tap, and drag makes it the ideal tool for creating the highly interactive UI components at the heart of the user experience. The fact that inspirational component libraries like Aceternity UI are built with Framer Motion further validates its capability for creating modern, polished micro-interactions.   
+
+The 3D Rendering Engine: Three.js and React Three Fiber (R3F)
+To deliver the required 3D elements, the application will leverage Three.js, the de-facto standard library for creating and displaying 3D graphics on the web using WebGL.   
+
+However, to integrate these 3D graphics seamlessly into the React application, React Three Fiber (R3F) will be used. R3F is a React renderer for Three.js, which means it allows developers to build complex 3D scenes using declarative React components, hooks, and props. This dramatically lowers the barrier to entry for WebGL development and allows the 3D elements to share state and logic with the rest of the React application. All 3D aspects of the project, from the main "Celestial News Grid" to the effects on individual cards, will be built with R3F.   
+
+The Specialist Animation Library: GSAP (GreenSock Animation Platform)
+While Framer Motion will handle the majority of animations, a more specialized tool is required for certain tasks. The project has two distinct animation needs: state-driven UI animations (like a card tilting on hover) and complex, timeline-based storytelling (like an interactive article that animates as the user scrolls). The nature of the animation task should dictate the tool used.
+
+For this reason, GSAP (GreenSock Animation Platform) will be employed for a specific, high-impact use case: creating complex, scroll-triggered animations within the immersive article view. GSAP, and particularly its ScrollTrigger plugin, is unparalleled in its performance, flexibility, and precise control over complex animation sequences tied to the scrollbar. While Framer Motion is excellent for state-driven UI, GSAP excels at orchestrating intricate, multi-element timelines, which is exactly what is needed to replicate the kind of advanced interactive journalism seen in award-winning digital publications. This hybrid approach—using both Framer Motion and GSAP—demonstrates a professional, nuanced understanding of the animation landscape, applying each library to its area of greatest strength.   
+
+Feature/Requirement	Framer Motion	GSAP (GreenSock Animation Platform)	Project Decision & Rationale
+React Integration	Native, declarative API. Excellent integration with component lifecycle and state.	Imperative API. Requires hooks (useGSAP) for proper integration and cleanup.	
+Framer Motion for all standard UI and component-based animations. Its syntax is more "React-y" and intuitive for state-driven interactions.   
+
+Page Transitions	Excellent, via AnimatePresence and shared layout animations. The industry standard.	Possible, but requires more manual implementation.	
+Framer Motion is the clear choice for its robust, purpose-built tools for page and layout transitions.   
+
+Gesture Handling	Built-in, high-level support for hover, tap, pan, and drag gestures.	Possible via Draggable plugin, but requires more setup.	
+Framer Motion for its out-of-the-box, easy-to-implement gesture animations.   
+
+Complex Timelines	Possible, but less intuitive. Orchestration is handled via variants and delays.	Core strength. The Timeline feature offers precise control over complex sequences.	
+GSAP for its superior timeline capabilities, making it ideal for multi-stage, orchestrated animations.   
+
+Scroll-Based Animation	Basic support via useScroll hook.	World-class via the ScrollTrigger plugin. Offers scrubbing, pinning, and immense control.	
+GSAP with ScrollTrigger will be used exclusively for advanced, scroll-based storytelling within articles due to its power and flexibility.   
+
+Performance	Very good, optimized for UI animations. Can lag with many complex, simultaneous animations.	
+Industry-leading performance, especially under heavy load. Smaller bundle size.   
+
+Both are performant. The decision is based on features, not a significant performance gap for this project's scope.
+Table 3.1: Animation Library Decision Matrix.			
+Frontend Architecture: Deconstructing the UI into Animated Components
+This section provides a granular, component-by-component blueprint for the frontend architecture. Each component is designed to be a self-contained, reusable piece of the UI, incorporating the specified technologies and design principles to bring the vision to life.
+
+The "Celestial" Main News Grid Component (NewsGrid.tsx)
+This component is the centerpiece of the user experience. It will render the 3D grid of news cards.
+
+3D Implementation: The entire component will be a React Three Fiber (R3F) canvas. A PerspectiveCamera will be configured to provide the 3D view. The grid itself will not be a true grid but a group of THREE.Object3D elements positioned in 3D space, with each news card having not just x and y coordinates, but also a z coordinate to create the illusion of depth.
+
+Interactivity: A mousemove event listener on the canvas will subtly adjust the camera's rotation. This will create a gentle parallax effect, making it feel as though the user is looking around a dynamic, three-dimensional space. This subtle but powerful effect is key to creating the "mind-blowing user experience" found in top-tier interactive sites.   
+
+The Interactive News Card Component (NewsCard.tsx)
+The NewsCard is where the bulk of the micro-interactions will occur. It will be a masterclass in composing multiple animation techniques to create an experience that is greater than the sum of its parts.
+
+Base Structure: The card will be a React component wrapped in Framer Motion's <motion.div> to enable UI animations.
+
+3D Tilt & Glare: To achieve the 3D tilt-on-hover effect, the card will use the react-parallax-tilt library. This lightweight library provides a highly configurable tilt effect, complete with a subtle glare that moves across the card's surface, reinforcing the sense of a physical, reflective object.   
+
+Image as a 3D Plane: The main image within the card will not be a standard <img> tag. It will be a <Plane> mesh inside a small, self-contained R3F canvas. This allows for the application of advanced WebGL shader effects directly to the image.
+
+Shader Effects: Upon hovering, a custom GLSL shader will be applied to the image plane. This shader will create a subtle, high-tech distortion or "glitch" effect, adding a layer of digital sophistication and delight.   
+
+UI Animations: Framer Motion will be used to orchestrate the other UI elements. On hover, a glowing border will animate around the card's perimeter (inspired by Aceternity UI's "Hover Border Gradient" ), and the headline and a short summary will smoothly fade or slide into view.   
+
+The Immersive Article View ([slug].tsx)
+This component will display the full content of a single news item. The transition into and the experience within this view are critical.
+
+Seamless Page Transitions: The transition from the NewsGrid to the ArticleView will be fluid and uninterrupted. This will be achieved using Framer Motion's AnimatePresence component combined with a shared layout animation. When a user clicks a NewsCard, that card will fluidly expand and transform into the header of the article page. This advanced technique eliminates the jarring effect of a full page reload and is a hallmark of premium, modern web applications.   
+
+Scroll-Triggered Storytelling: For longer, more detailed articles, this view will leverage GSAP and the ScrollTrigger plugin. As the user scrolls down the page, various elements will animate into view in a carefully orchestrated sequence. For example, images might fade in and pan slightly, key quotes could be highlighted as they enter the viewport, and data visualizations could animate their data points. This turns a static article into a dynamic, engaging narrative, directly applying the techniques of the world's best interactive journalism.   
+
+Navigation and UI Controls (Navbar.tsx, Search.tsx)
+Navbar: The navigation bar will be modern and minimal. It will be implemented using inspiration from Aceternity UI's "Sticky Navbar". Initially, it will be transparent against the page header. As the user scrolls down, it will transition to a semi-transparent, blurred background (a "glassmorphism" effect) and stick to the top of the viewport. Links will have subtle hover animations.   
+
+Search: Clicking the search icon will trigger a full-screen modal search interface. This modal will animate in smoothly using Framer Motion, providing a focused, distraction-free environment for users to find specific content.
+
+Ambient 3D Background Effects (AmbientBackground.tsx)
+To enhance the modern, tech-focused atmosphere of the site, a subtle, generative 3D background will be implemented. This will be a full-screen R3F canvas positioned behind all other content.
+
+Effect: The effect will be computationally inexpensive to ensure it does not impact site performance. Options include a slow-moving field of low-polygon particles, a subtle "vortex" effect, or slowly animating "background beams" of light, drawing inspiration from the background effects available in Aceternity UI  and the general examples on the Three.js website. This ambient animation adds a layer of depth and visual interest to the entire site without being distracting.   
+
+Backend Architecture & Content Pipeline
+A robust and flexible backend is essential to power the dynamic frontend and accommodate the specified content workflows. The architecture will support both automated content ingestion from PDFs and a manual content management system (CMS).
+
+Data Modeling & API Design
+Database and ORM: The backend will use a PostgreSQL database for its reliability and scalability. Prisma will be used as the Object-Relational Mapper (ORM) to provide a type-safe and intuitive way to interact with the database from the Next.js application.
+
+Data Schema: A core NewsItem model will be defined in the Prisma schema. It will include the following fields:
+
+id: Unique identifier (UUID)
+
+title: String
+
+slug: String (unique, URL-friendly version of the title)
+
+summary: String (a short teaser for the news card)
+
+fullContent: String (the full article content, stored in Markdown for flexibility)
+
+imageUrl: String (URL for the main article image)
+
+sourceLink: String (optional link to the original source)
+
+category: String (e.g., "Technology," "Education," "World News")
+
+status: Enum (DRAFT, PUBLISHED)
+
+publishedAt: DateTime
+
+API: A RESTful API will be built using Next.js API Routes. This API will expose endpoints for the frontend to fetch and manage news content. Key public endpoints will include GET /api/news to fetch a list of published articles and GET /api/news/[slug] to retrieve a single article.
+
+Automated Content Ingestion from PDF
+To address the user's requirement to upload news from a PDF, a secure, server-side workflow will be created. It is critical to recognize that PDF is a presentation format, not a structured data format. Automated parsing is inherently unreliable and can lead to poor data quality. Therefore, the system will be designed to use automation as a first pass, followed by mandatory human review.
+
+Endpoint: A secure, authenticated API endpoint (POST /api/admin/news/upload-pdf) will be created to accept PDF file uploads.
+
+Server-Side Parsing: On the server, the endpoint will use Mozilla's PDF.js library, which can run in a Node.js environment, to parse the uploaded file. The library will be used to extract all text content from the PDF.   
+
+Workflow: The parsing logic will attempt to create new NewsItem records in the database. However, instead of publishing them directly, these new items will be saved with a status of DRAFT. This is a crucial step. It prevents messy, unverified content from going live and places the newly created items into a moderation queue within the admin dashboard for a human user to review, clean up, format, and manually publish.
+
+Manual Content Management System (CMS)
+To complement the automated workflow and provide full control over content, a simple but functional admin dashboard will be built.
+
+Authentication: The admin routes (/admin/*) will be protected using a robust authentication solution like NextAuth.js.
+
+CRUD Interface: The dashboard will provide a complete Create, Read, Update, and Delete (CRUD) interface for all NewsItem records. This will include:
+
+A form to create new articles manually, with fields for title, summary, a Markdown editor for the full content, image URL, and source link.
+
+A table view listing all news items, showing their status (Draft/Published). This table will serve as the review queue for items ingested from PDFs.
+
+The ability to edit and delete any existing article.
+This interface will be powered by a set of secure API endpoints protected by the authentication layer.
+
+Endpoint (Method & URL)	Description	Authentication	Request Body (Example)	Success Response (Example)
+GET /api/news	Fetches a list of all published news items.	None	N/A	[{id, title, slug, summary, imageUrl}]
+GET /api/news/[slug]	Fetches a single published news item by its slug.	None	N/A	{id, title, fullContent,...}
+POST /api/admin/news/upload-pdf	Accepts a PDF file for automated ingestion.	Admin	FormData with PDF file	{ success: true, count: 5 }
+POST /api/admin/news	Creates a new news item manually.	Admin	{ title, summary, fullContent,...}	{ id, title, status: 'DRAFT',...}
+PUT /api/admin/news/[id]	Updates an existing news item (e.g., to publish it).	Admin	{ title, status: 'PUBLISHED',...}	{ id, title, status: 'PUBLISHED',...}
+DELETE /api/admin/news/[id]	Deletes a news item.	Admin	N/A	{ success: true }
+Table 5.1: API Endpoint Definitions.				
+
+Export to Sheets
+The Master Prompt: A Complete AI Directive
+Project Goal: You are an expert full-stack developer. Your task is to build a highly animated, attractive, modern, and interactive news section for a student-focused website. The entire application will be built with a dark theme by default. You will use the specified technology stack and follow the detailed architectural and design blueprints provided below.
+
+Section 1: Core Vision & User Experience
+The goal is to create an explorable "Celestial News Grid." This is a 3D perspective space where news cards float at varying depths. The user experience must be about active exploration, not passive reading. All animations and 3D effects must serve a purpose, enhancing usability and storytelling rather than being purely decorative.
+
+Section 2: Design System & Theming
+You will implement a professional-grade dark theme using the following specifications. The implementation must use Shadcn/ui and Tailwind CSS, with all colors defined as CSS variables in globals.css for theming.
+
+Dark Theme Principles:
+
+Do not use pure black (#000000) for backgrounds. Use a dark grey like #121212 (or its OKLCH equivalent).
+
+Do not use pure white (#FFFFFF) for body text. Use an off-white/light grey to reduce eye strain.
+
+Use surface color for elevation. Do not rely on shadows. Higher elements (modals, navbars) must have a lighter grey background than the elements beneath them.
+
+Color & Typography:
+
+Implement the color palette and border radius from Table 2.1 as CSS variables.
+
+Use two fonts: Inter for all UI text and body copy, and Playfair Display for major H1 headlines.
+
+Establish a clear typographic scale (H1, H2, H3, body, caption) with appropriate sizes and weights.
+
+Theming Implementation:
+
+Initialize the project with Shadcn/ui.
+
+Install next-themes and create a ThemeProvider component as per the Shadcn/ui documentation.
+
+Wrap the root layout in this ThemeProvider.
+
+Create a ModeToggle button to allow users to switch themes (though dark is the default).
+
+Section 3: Technology Stack
+You will use the following technology stack. Adhere strictly to these choices.
+
+Framework: Next.js (using the App Router)
+
+Styling: Tailwind CSS
+
+Component Foundation: Shadcn/ui
+
+Primary Animation Library: Framer Motion (for all UI, layout, and gesture animations)
+
+3D Rendering: Three.js with React Three Fiber (R3F) and Drei (for helpers)
+
+Specialist Animation Library: GSAP with the ScrollTrigger plugin (for complex, scroll-based animations within articles ONLY)
+
+Backend: Next.js API Routes, PostgreSQL, Prisma ORM
+
+Authentication: NextAuth.js (for the admin panel)
+
+PDF Parsing: PDF.js (on the server-side)
+
+Section 4: Frontend Component Architecture
+Build the following React components with the specified features.
+
+components/AmbientBackground.tsx
+
+A full-screen R3F canvas that sits behind all content.
+
+Render a subtle, low-performance-cost generative animation (e.g., a slow-moving particle field or vortex).
+
+app/news/NewsGrid.tsx
+
+This is the main page for the news section.
+
+It must be an R3F canvas with a PerspectiveCamera.
+
+Fetch all published NewsItem records from the API.
+
+For each news item, render a NewsCard component. Position these cards in a 3D grid layout, varying their z position to create depth.
+
+On mousemove over the canvas, subtly animate the camera's rotation to create a parallax "look-around" effect.
+
+components/NewsCard.tsx
+
+This component displays a single news item in the grid.
+
+The root element must be wrapped in react-parallax-tilt to enable the 3D tilt-on-hover effect. Configure it with a subtle glare effect.
+
+The card's main image must be rendered inside its own small R3F canvas as a <Plane> mesh.
+
+On hover, apply a custom GLSL fragment shader to the image plane to create a subtle glitch/distortion effect.
+
+Use Framer Motion to:
+
+Animate a glowing gradient border on hover.
+
+Animate the opacity/position of the headline and summary text to reveal them smoothly on hover.
+
+app/news/[slug]/page.tsx
+
+This is the detail page for a single article.
+
+Implement a seamless page transition from the NewsGrid. The clicked NewsCard must fluidly expand into this page's header using Framer Motion's shared layout animations (layoutId).
+
+Display the full article content fetched from the API, rendering the Markdown content correctly.
+
+For articles with long content, use GSAP and the ScrollTrigger plugin to create scroll-based animations (e.g., fade-in paragraphs, panning images as they enter the viewport).
+
+components/Navbar.tsx
+
+Create a sticky navigation bar.
+
+It should be transparent initially and transition to a semi-transparent, blurred background on scroll.
+
+Include links and a search icon with simple Framer Motion hover effects.
+
+Section 5: Backend & Content Management Architecture
+Build the following backend features and API endpoints.
+
+Prisma Schema (prisma/schema.prisma)
+
+Define the NewsItem model with the fields: id (UUID), title, slug (unique), summary, fullContent (String, for Markdown), imageUrl, sourceLink (optional), category, status (Enum: DRAFT, PUBLISHED), publishedAt.
+
+API Endpoints (in app/api/)
+
+Implement all public and admin API endpoints as defined in Table 5.1.
+
+Ensure all /admin/* routes are protected by NextAuth.js authentication.
+
+PDF Ingestion Logic (app/api/admin/news/upload-pdf/route.ts)
+
+Create the endpoint to handle multipart/form-data uploads containing a PDF file.
+
+Use the PDF.js library on the server to extract text content from the uploaded PDF.
+
+For each PDF processed, create a new NewsItem record in the database.
+
+Crucially, set the status of these new records to DRAFT. They must not be publicly visible until a human reviews them.
+
+Admin Dashboard (app/admin/*)
+
+Create a new section of the site under the /admin route, protected by authentication.
+
+Build a simple CRUD interface for NewsItem records.
+
+Include a form for creating/editing news items with a Markdown editor for the fullContent field.
+
+Display a table of all news items, clearly showing their status. This table will act as the review queue for PDF-ingested items, allowing an admin to edit and change their status to PUBLISHED.
+
+
+
+You are a full-stack engineer with design and animation expertise. Build a complete news section for a student-focused website using modern frontend and backend technology. The news system must automatically ingest a daily PDF containing 50 short news stories and convert it into an engaging, animated, fully interactive news section. It must be optimized for performance, smooth animations, accessibility, and automated content extraction. You must generate real, working backend + frontend code, not placeholders.
+
+🔥 OVERVIEW
+The news section must be visually mind-blowing, futuristic, and fully 3D interactive.
+
+Design: Dark mode, student-friendly, clean, vibrant, elegant.
+
+Performance: Zero lag across all sections.
+
+Input: A daily-uploaded PDF containing 50 news articles.
+
+Output: Auto-populated animated, interactive news grid with expandable full articles.
+
+🧠 USER STORY
+As an admin, I upload a daily PDF file with 50 short news stories.
+
+The backend parses this PDF and creates 50 news entries in the database (status = "draft").
+
+Admin can review/edit/publish these from a secure dashboard.
+
+Visitors see only "published" news displayed in a modern, animated 3D news grid.
+
+Each card shows headline + summary, and expands to show full article.
+
+⚙️ FRONTEND TECHNOLOGY STACK
+Next.js (App Router) for routing, SSG, SSR, and fast navigation.
+
+React 18+
+
+TailwindCSS (with dark theme and OKLCH values).
+
+Shadcn/UI for elegant accessible components.
+
+Three.js + React Three Fiber + Drei for 3D effects.
+
+Framer Motion for UI animation + shared layout transitions.
+
+GSAP ScrollTrigger for scroll-based animations in full-article view.
+
+Lottie for micro-interactions and loading.
+
+Fully responsive: desktop, tablet, mobile.
+
+🎨 DESIGN REQUIREMENTS
+Dark theme, futuristic: use #121212, gradients, soft shadows.
+
+Glassmorphism for cards and nav.
+
+Floating 3D hover effects with parallax on cards.
+
+Animated breaking ticker, search, category filters.
+
+Expand card → transition into full article (smooth shared layout animation).
+
+Animate images/text on scroll in article view.
+
+Particle backgrounds using R3F behind content.
+
+📱 UX FEATURES
+Infinite scroll or pagination with fade-in news cards.
+
+3D card effects (hover tilt, glitch shader on image).
+
+Animations: hover, click, scroll.
+
+Responsive sidebar with trending/newsletter/sign-up.
+
+“Read More” smooth expand.
+
+Share buttons, tags, category filters.
+
+Search with suggestions, real-time fuzzy match.
+
+🧩 COMPONENTS TO BUILD
+/components/NewsCard.tsx: 3D hover, Framer Motion, glitch shader image, summary text.
+
+/components/NewsGrid.tsx: R3F 3D layout, dynamic depth-based card positioning.
+
+/components/NewsHero.tsx: Featured article in 3D with scroll-triggered animation.
+
+/components/SearchBar.tsx: expanding, animated with dropdown.
+
+/components/Navbar.tsx: sticky nav, blur + transparency on scroll.
+
+/components/AmbientBackground.tsx: full-page R3F background (particles/light lines).
+
+/app/news/[slug]/page.tsx: full article detail page with GSAP scroll animation.
+
+/app/admin/page.tsx: authenticated admin dashboard to review/publish news.
+
+🛠️ BACKEND REQUIREMENTS (Node.js/Express inside Next.js API routes)
+Database: MongoDB with Mongoose (or Prisma if SQL).
+
+PDF Parsing: Use pdf-parse or pdfjs-dist to extract news blocks server-side.
+
+Upload: Admin uploads daily PDF via /api/admin/upload-pdf.
+
+Parsing: Extracts each headline + summary + optional tags/date from PDF.
+
+Storage: Saves each news story to database with status = 'draft'.
+
+Admin: Authenticated dashboard to view/edit/publish parsed stories.
+
+📄 DATABASE SCHEMA (Mongoose or Prisma)
+ts
+Copy
+Edit
+{
+  title: String,
+  summary: String,
+  fullContent: String,
+  category: String,
+  tags: [String],
+  status: 'draft' | 'published',
+  publishDate: Date,
+  views: Number,
+  slug: String,
+  sourceLink: String,
+  imageUrl: String,
+  createdAt: Date,
+  updatedAt: Date
+}
+🧾 API ROUTES TO IMPLEMENT
+GET /api/news: Get paginated list of published news.
+
+GET /api/news/:slug: Get a single article.
+
+POST /api/news/upload-pdf: Upload daily PDF, parse into draft news.
+
+POST /api/news: Add a manual article.
+
+PUT /api/news/:id: Update a news article.
+
+DELETE /api/news/:id: Delete a news article.
+
+GET /api/news/search?q=...: Search by title, tags, summary.
+
+📤 DAILY AUTOMATION WORKFLOW
+Upload PDF (interface in admin panel).
+
+Backend extracts 50 news articles.
+
+Saves them with status = draft.
+
+Admin reviews → sets status = published.
+
+News appears in user-facing grid.
+
+📈 ANALYTICS TRACKING
+Count views, likes, shares per article.
+
+Trending news widget in sidebar (based on engagement).
+
+Store analytics in DB and update on interaction.
+
+🌐 PERFORMANCE & SEO
+Lazy load components.
+
+Image optimization.
+
+Use next/image.
+
+Code splitting.
+
+SEO meta tags per article.
+
+Fast Lighthouse score.
+
+♿ ACCESSIBILITY & UX
+Full keyboard navigation.
+
+Alt text for images.
+
+Reduced motion mode.
+
+Theme toggle.
+
+Proper aria-labels, roles.
+
+🪐 AMBIENT + 3D INTEGRATIONS
+Floating particle background via R3F.
+
+Hover tilt on cards with depth shadows.
+
+Glitch shader for card image.
+
+GSAP for immersive scroll storytelling in article page.
+
+💾 FILE STRUCTURE
+bash
+Copy
+Edit
+project/
+├── app/
+│   ├── news/
+│   │   ├── [slug]/page.tsx
+│   │   └── NewsGrid.tsx
+│   └── admin/
+│       └── page.tsx
+├── components/
+│   ├── NewsCard.tsx
+│   ├── AmbientBackground.tsx
+│   ├── Navbar.tsx
+│   └── ...
+├── pages/api/
+│   ├── news/
+│   │   ├── index.ts
+│   │   ├── [slug].ts
+│   │   ├── upload-pdf.ts
+│   └── ...
+├── lib/
+│   ├── db.ts
+│   ├── parsePDF.ts
+│   └── auth.ts
+├── prisma/ (if using Prisma)
+│   └── schema.prisma
+✅ END RESULT EXPECTATION
+Fully functional daily-updated animated 3D news section.
+
+Visitors experience a modern, sci-fi inspired, immersive interface.
+
+Admin only needs to upload PDF; system handles rest.
+
+Every line of backend and frontend code must be generated accurately — no dummy logic.
+
+Everything must work smoothly on Replit without lag or errors.
