@@ -116,7 +116,7 @@ export const HowItWorks: React.FC = () => {
           {/* Desktop Layout */}
           <div className="hidden lg:flex items-start justify-between">
             {steps.map((step, index) => (
-              <div key={step.number} className="flex items-start">
+              <React.Fragment key={step.number}>
                 <div className="flex-1">
                   <Step
                     number={step.number}
@@ -127,7 +127,7 @@ export const HowItWorks: React.FC = () => {
                   />
                 </div>
                 {index < steps.length - 1 && <ConnectorLine index={index} />}
-              </div>
+              </React.Fragment>
             ))}
           </div>
 
